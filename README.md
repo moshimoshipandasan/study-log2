@@ -91,7 +91,7 @@ Settings
 
 Pagesが公開されると、次のページが見られます。
 
-- `index.html`: 全体のまなびの冒険マップ
+- `index.html`: 全体の学びの道すじ
 - `thinking-depth.html`: 最新のまなびレポート
 - `thinking-depth/issue-<Issue番号>.html`: Issueごとのまなびレポート
 - `portfolio.md`: HTML公開に失敗したときのMarkdown版

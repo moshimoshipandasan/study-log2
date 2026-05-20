@@ -493,15 +493,13 @@ function renderLearningJourneyHtml(items, repository) {
   const generatedAt = new Date();
   const recent = [...items].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
   const featured = recent[0];
-  const closed = items.filter((item) => item.state === "closed").length;
-  const readable = items.filter((item) => visibleJourneyCount(item) >= 5).length;
 
   return `<!doctype html>
 <html lang="ja">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>まなびの冒険マップ | 学習ハーネス</title>
+  <title>学びの道すじ | 学習ハーネス</title>
   <style>
     :root {
       color-scheme: light;
@@ -599,18 +597,6 @@ function renderLearningJourneyHtml(items, repository) {
       border-top: 7px solid var(--blue);
     }
 
-    .hero-copy::after {
-      content: "";
-      position: absolute;
-      right: 28px;
-      bottom: 26px;
-      width: 96px;
-      height: 12px;
-      border-radius: 999px;
-      background: linear-gradient(90deg, var(--teal), var(--amber), var(--coral));
-      opacity: 0.42;
-    }
-
     .eyebrow {
       display: inline-flex;
       color: var(--teal);
@@ -674,22 +660,12 @@ function renderLearningJourneyHtml(items, repository) {
       font-size: 0.94rem;
     }
 
-    .summary-strip {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 14px;
-      margin-bottom: 18px;
+    .page-note {
+      margin: 0 0 18px;
+      color: var(--muted);
+      font-size: 0.95rem;
     }
 
-    .summary-strip article {
-      padding: 18px;
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      background: var(--surface);
-      box-shadow: 0 10px 26px rgba(23, 32, 38, 0.06);
-    }
-
-    .summary-strip span,
     .journey-card header span,
     .featured-status span,
     .empty-journey span {
@@ -697,14 +673,6 @@ function renderLearningJourneyHtml(items, repository) {
       color: var(--muted);
       font-size: 0.82rem;
       font-weight: 800;
-    }
-
-    .summary-strip strong {
-      display: block;
-      margin-top: 4px;
-      font-size: 2.05rem;
-      line-height: 1.1;
-      color: var(--blue);
     }
 
     .featured-journey {
@@ -963,7 +931,6 @@ function renderLearningJourneyHtml(items, repository) {
     @media (max-width: 860px) {
       .hero,
       .featured-journey,
-      .summary-strip,
       .journey-steps {
         grid-template-columns: 1fr;
       }
@@ -1012,7 +979,7 @@ function renderLearningJourneyHtml(items, repository) {
     <section class="hero" aria-label="ページ概要">
       <div class="hero-copy">
         <span class="eyebrow">Learning Adventure</span>
-        <h1>まなびの冒険マップ</h1>
+        <h1>学びの道すじ</h1>
         <p>
           このページは、学習者がどんな「ふしぎ」から出発し、どんな予想をして、何をたしかめ、
           どこで「なるほど」と思ったかを小学生にも読める言葉でまとめます。
@@ -1027,11 +994,7 @@ function renderLearningJourneyHtml(items, repository) {
       </aside>
     </section>
 
-    <section class="summary-strip" aria-label="学習記録の概要">
-      <article><span>まなびカード</span><strong>${items.length}</strong></article>
-      <article><span>クリアしたカード</span><strong>${closed}</strong></article>
-      <article><span>成長がはっきり見えるカード</span><strong>${readable}</strong></article>
-    </section>
+    <p class="page-note">いま読める学習記録は${items.length}件です。数字の多さではなく、本人の言葉で「考えがどう変わったか」を見ます。</p>
 
     ${renderFeaturedJourney(featured)}
 
@@ -1047,7 +1010,7 @@ function renderLearningJourneyHtml(items, repository) {
           : `<section class="empty-journey">
               <span>No Issues</span>
               <h2>まだ表示できるまなびカードがありません</h2>
-              <p><code>${escapeHtml(showLabel)}</code> ラベル付きIssueが追加されると、ここにまなびの冒険マップが表示されます。</p>
+              <p><code>${escapeHtml(showLabel)}</code> ラベル付きIssueが追加されると、ここに学びの道すじが表示されます。</p>
             </section>`
       }
     </section>
@@ -1145,7 +1108,7 @@ function renderPortfolioMarkdown(items, repository) {
     .join("\n\n");
 
   return [
-    "# まなびの冒険マップ Markdown版",
+    "# 学びの道すじ Markdown版",
     "",
     "このファイルは、GitHub Pagesの権限や設定でHTML公開ができない場合でも学習の成果を読めるようにするためのフォールバックです。",
     "`公開:のせる` が付いたIssueを集め、Issue本文とコメントから考えの成長を整理しています。",
