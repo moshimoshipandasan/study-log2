@@ -1,53 +1,53 @@
-name: 問題提起
-description: 会話中に出た疑問、仮説、確認したい論点を学習Issueとして記録する
+name: ふしぎメモ
+description: 会話中に出た「なぜ？」「もっと知りたい」を学習Issueとして記録する
 title: "[問題提起] "
-labels: ["status:ready", "type:question", "portfolio:show"]
+labels: ["状態:はじめられる", "種類:ふしぎメモ", "公開:のせる"]
 body:
   - type: input
     id: subject
     attributes:
       label: 教科
-      description: 数学、英語、国語、理科、社会など。未確定なら「未分類」と書く
+      description: 算数、国語、理科、社会、英語など。未確定なら「未分類」と書く
       placeholder: 社会
     validations:
       required: true
   - type: input
     id: question
     attributes:
-      label: 問題提起
-      description: 何が気になったか、何を確認したいか
-      placeholder: 秀長旧領は秀保の死後にどう再編されたのか
+      label: ふしぎ・知りたいこと
+      description: 何が気になったか、何をたしかめたいか
+      placeholder: なぜ月の形は毎日少しずつ変わるのか
     validations:
       required: true
   - type: textarea
     id: context
     attributes:
-      label: 背景
-      description: その疑問が出た流れ、前提、関連するIssueを書く
-      placeholder: レポート本文を改訂する中で、秀長・秀保の死後の所領再編を確認したくなった。
+      label: きっかけ
+      description: その疑問が出た流れ、見たもの、読んだもの、関連するIssueを書く
+      placeholder: 理科の授業で月の写真を見て、日によって形がちがうのが気になった。
     validations:
       required: true
   - type: textarea
     id: learner_hypothesis
     attributes:
-      label: 学習者の仮説・考え
-      description: 正しいか不安でも、まず自分ではどう考えたかを書く
-      placeholder: 秀長旧領が五奉行に渡ったことで、豊臣一門の力が弱まったのではないか。
+      label: まず自分で考えたこと
+      description: 正しいか不安でも、答えを見る前の予想を書く
+      placeholder: 月そのものが少しずつ欠けているのではなく、光って見える場所が変わるのかもしれない。
     validations:
       required: true
   - type: textarea
     id: expected_insight
     attributes:
-      label: 何がわかると「なるほど」と思えそうか
-      description: どんな区別、判断基準、根拠が見つかると納得できそうか
-      placeholder: 五奉行と五大老の役割や実力差を区別できると、秀長旧領の再編が政権弱体化につながる理由を説明できそう。
+      label: わくわくポイント
+      description: 何がわかると「なるほど」「おもしろい」と思えそうか
+      placeholder: 図で太陽・地球・月の場所を見たら、月の形が変わる理由を説明できそう。
     validations:
       required: false
   - type: textarea
     id: unknowns
     attributes:
-      label: 確認したいこと
-      description: 事実確認、根拠確認、説明の改善点など
+      label: たしかめたいこと
+      description: 調べたいこと、見たい図、試したい問題、説明をよくしたいところ
       value: |
         - 
     validations:
@@ -68,13 +68,13 @@ body:
   - type: textarea
     id: done
     attributes:
-      label: 完了条件
+      label: レベルアップのゴール
       value: |
-        - [ ] 問題提起を自分の言葉で説明できる
-        - [ ] 思考がどう変わったかを記録した
-        - [ ] 得た知見または次に使える判断基準を記録した
-        - [ ] 根拠または確認結果を記録した
-        - [ ] 類題または確認問題を1問以上解いた
-        - [ ] 次回復習する内容を決めた
+        - [ ] ふしぎを自分の言葉で説明できる
+        - [ ] 最初の予想と、あとで変わった考えを記録した
+        - [ ] なるほどポイントを記録した
+        - [ ] たしかめたことを記録した
+        - [ ] たしかめ問題を1問以上やった
+        - [ ] 次にもう一度たしかめることを決めた
     validations:
       required: true

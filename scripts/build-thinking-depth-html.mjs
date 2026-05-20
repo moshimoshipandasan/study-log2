@@ -16,12 +16,12 @@ const stages = [
     title: "記録する",
     short: "学びを残した",
     description: "学んだ内容や困ったことを、あとから読める形で残せています。",
-    next: "わからなかったことを問いの形にします。",
+    next: "わからなかったことを「ふしぎ」の形で書きます。",
   },
   {
-    title: "問いを立てる",
-    short: "疑問が見える",
-    description: "何を知りたいのか、何を確かめたいのかが自分の言葉で見えています。",
+    title: "ふしぎを見つける",
+    short: "知りたいことが見える",
+    description: "何を知りたいのか、何をたしかめたいのかが自分の言葉で見えています。",
     next: "答えを聞く前に、自分の予想を書きます。",
   },
   {
@@ -43,20 +43,20 @@ const stages = [
     next: "次に似た問題を見たときの見分け方を作ります。",
   },
   {
-    title: "次に使える形にする",
-    short: "知見化できた",
-    description: "今回の学びを、次の問題やレポートでも使える判断基準にできています。",
-    next: "確認問題や復習日を決め、次回も使えるか試します。",
+    title: "次のコツにする",
+    short: "次に使える",
+    description: "今回の学びを、次の問題やレポートでも使えるコツにできています。",
+    next: "たしかめ問題や復習日を決め、次回も使えるか試します。",
   },
 ];
 
 const phases = [
   {
     key: "question",
-    label: "問い",
+    label: "ふしぎ",
     friendly: "何がわからなかった？",
     hint: "疑問や調べたいことを自分の言葉にしたか。",
-    sections: ["問題提起", "わからなかったこと", "わからないこと", "確認したいこと", "レポートテーマ"],
+    sections: ["問題提起", "ふしぎ・知りたいこと", "ふしぎ・わからないこと", "わからなかったこと", "わからないこと", "確認したいこと", "たしかめたいこと", "レポートテーマ"],
   },
   {
     key: "hypothesis",
@@ -67,10 +67,10 @@ const phases = [
   },
   {
     key: "check",
-    label: "確認",
+    label: "たしかめ",
     friendly: "本当に使えるか試した？",
-    hint: "確認問題、類題、復習予定など、次の行動につながっているか。",
-    sections: ["類題・確認問題の結果", "確認問題の結果", "次の確認問題", "次回復習すること", "次回復習日"],
+    hint: "たしかめ問題、似た問題、復習予定など、次の行動につながっているか。",
+    sections: ["類題・確認問題の結果", "確認問題の結果", "次の確認問題", "たしかめたいこと", "次回復習すること", "次回復習日"],
   },
   {
     key: "shift",
@@ -81,27 +81,27 @@ const phases = [
   },
   {
     key: "insight",
-    label: "気づき",
-    friendly: "何がわかった？",
+    label: "なるほど",
+    friendly: "何がわかって、わくわくした？",
     hint: "ただ調べた内容ではなく、自分が説明できるようになったことがあるか。",
-    sections: ["得た知見", "なるほどポイント", "今日できるようになったこと", "結論"],
+    sections: ["得た知見", "なるほどポイント", "わくわくポイント", "今日できるようになったこと", "結論"],
   },
   {
     key: "criteria",
-    label: "次に使う",
-    friendly: "次はどう見分ける？",
-    hint: "次に似た問題を見たとき、何を確認すればよいかがあるか。",
-    sections: ["次に使える判断基準", "科学的な見地から見た注意点"],
+    label: "次のコツ",
+    friendly: "次はどんなコツを使う？",
+    hint: "次に似た問題を見たとき、何をたしかめればよいかがあるか。",
+    sections: ["次に使える判断基準", "レベルアップのゴール", "科学的な見地から見た注意点"],
   },
 ];
 
 const loopSteps = [
   {
     key: "question",
-    label: "問い",
+    label: "ふしぎ",
     prompt: "何が知りたい？",
     empty: "まだ「何が知りたいか」が一文で残っていません。",
-    headings: ["問い", "問題提起", "わからなかったこと", "わからないこと", "確認したいこと", "レポートテーマ"],
+    headings: ["問い", "ふしぎ", "問題提起", "ふしぎ・知りたいこと", "ふしぎ・わからないこと", "わからなかったこと", "わからないこと", "確認したいこと", "たしかめたいこと", "レポートテーマ"],
   },
   {
     key: "hypothesis",
@@ -112,10 +112,10 @@ const loopSteps = [
   },
   {
     key: "check",
-    label: "確認",
-    prompt: "何を見て確かめた？",
-    empty: "何を根拠に確かめたかがまだはっきりしていません。",
-    headings: ["確認", "根拠確認", "根拠確認の結果", "Codexの整理", "回答", "追加説明", "確認問題の結果", "類題・確認問題の結果", "次の確認問題"],
+    label: "たしかめ",
+    prompt: "何を見てたしかめた？",
+    empty: "何を見てたしかめたかがまだはっきりしていません。",
+    headings: ["確認", "たしかめ", "根拠確認", "根拠確認の結果", "Codexの整理", "回答", "追加説明", "確認問題の結果", "類題・確認問題の結果", "次の確認問題", "たしかめたいこと"],
   },
   {
     key: "shift",
@@ -126,17 +126,17 @@ const loopSteps = [
   },
   {
     key: "insight",
-    label: "気づき",
+    label: "なるほど",
     prompt: "何がわかった？",
     empty: "新しく説明できるようになったことを、もう一文で残すとよくなります。",
-    headings: ["気づき", "得た知見", "なるほどポイント", "今日できるようになったこと", "結論", "提出用の最終文"],
+    headings: ["気づき", "得た知見", "なるほどポイント", "わくわくポイント", "今日できるようになったこと", "結論", "提出用の最終文"],
   },
   {
     key: "future",
-    label: "次に使う",
+    label: "次のコツ",
     prompt: "次は何に使う？",
     empty: "次に似た問題で使う見分け方や復習予定がまだ少ないです。",
-    headings: ["次に使う", "これから使う", "次に使える判断基準", "次回復習すること", "次回復習日", "次回復習", "次の課題候補", "まだ不安なこと"],
+    headings: ["次に使う", "これから使う", "次のコツ", "次に使える判断基準", "レベルアップのゴール", "次回復習すること", "次回復習日", "次回復習", "次の課題候補", "まだ不安なこと"],
   },
 ];
 
@@ -521,11 +521,11 @@ async function loadSource(args) {
 
 ## 今日の目標
 
-ハーネス終了時に、Issue番号または学習ログを指定すると、このページに思考深化レポートが表示されます。
+ハーネス終了時に、Issue番号または学習ログを指定すると、このページにまなびレポートが表示されます。
 
 ## わからなかったこと
 
-学習Issueが作成されると、ここに問いが入ります。
+学習Issueが作成されると、ここにふしぎが入ります。
 
 ## 自分で考えたこと
 
@@ -533,19 +533,19 @@ async function loadSource(args) {
 
 ## 思考の変化
 
-確認や対話で考えが変わると、ここに表示されます。
+たしかめや対話で考えが変わると、ここに表示されます。
 
-## 得た知見
+## なるほどポイント
 
 学習で説明できるようになったことが、ここに表示されます。
 
-## 次に使える判断基準
+## 次のコツ
 
 次に似た問題を見たときの見分け方が、ここに表示されます。
 
 ## 次の確認問題
 
-確認問題や復習予定が、ここに表示されます。`,
+たしかめ問題や復習予定が、ここに表示されます。`,
     };
   }
 
@@ -568,7 +568,7 @@ function buildReportModel(source) {
     220,
   );
   const blockers = compactMarkdown(
-    firstSection(sections, ["わからなかったこと", "わからないこと", "確認したいこと"]),
+    firstSection(sections, ["ふしぎ・知りたいこと", "ふしぎ・わからないこと", "わからなかったこと", "わからないこと", "確認したいこと", "たしかめたいこと"]),
     220,
   );
   const review = compactMarkdown(
@@ -615,17 +615,17 @@ function buildReportModel(source) {
   const stage = determineStage(phaseModels, Boolean(goal || firstView || blockers));
   const before = firstView || blockers || phaseModels.find((phase) => phase.key === "question")?.text || "";
   const after =
-    firstSection(sections, ["思考の変化"]) ||
-    firstSection(sections, ["得た知見", "なるほどポイント", "結論"]) ||
-    firstSection(sections, ["次に使える判断基準"]) ||
+    firstSection(sections, ["思考の変化", "考えが変わったところ"]) ||
+    firstSection(sections, ["得た知見", "なるほどポイント", "わくわくポイント", "結論"]) ||
+    firstSection(sections, ["次に使える判断基準", "レベルアップのゴール"]) ||
     loopText(learningLoop, "shift") ||
     loopText(learningLoop, "insight") ||
     loopText(learningLoop, "future") ||
     "";
   const actionItems = [
-    ...splitItems(firstSection(sections, ["次に使える判断基準"]), 3),
+    ...splitItems(firstSection(sections, ["次に使える判断基準", "レベルアップのゴール"]), 3),
     ...splitItems(loopText(learningLoop, "future"), 3),
-    ...splitItems(firstSection(sections, ["類題・確認問題の結果", "確認問題の結果", "次の確認問題"]), 2),
+    ...splitItems(firstSection(sections, ["類題・確認問題の結果", "確認問題の結果", "次の確認問題", "たしかめたいこと"]), 2),
     ...splitItems(review || nextTask, 2),
   ].slice(0, 5);
 
@@ -668,7 +668,7 @@ function determineStage(phaseModels, hasBasicRecord) {
 
 function renderStagePath(stage) {
   return `
-    <ol class="stage-path" aria-label="思考が深まる道すじ">
+    <ol class="stage-path" aria-label="考えが育つ道すじ">
       ${stages
         .map((item, index) => {
           const state = index < stage.level ? "is-done" : index === stage.level ? "is-current" : "";
@@ -708,13 +708,13 @@ function renderPhaseCards(phasesToRender) {
 
 function renderLearningLoop(loop) {
   return `
-    <section class="loop-board" aria-label="学習者の思考の一周ログ">
+    <section class="loop-board" aria-label="学習者のまなびの一周ログ">
       <div class="section-head">
         <div>
           <span class="eyebrow">Learning Loop</span>
           <h2>一周ごとの考えの進み方</h2>
         </div>
-        <p>会話やIssueコメントから、学習者が「問い → 予想 → 確かめ → 考え直し → 気づき → これから使う」へ進んだ跡を拾います。</p>
+        <p>会話やIssueコメントから、学習者が「ふしぎ → 予想 → たしかめ → 考え直し → なるほど → 次のコツ」へ進んだ跡を拾います。</p>
       </div>
       <ol class="loop-steps">
         ${loop
@@ -745,7 +745,7 @@ function renderActionList(items, fallback) {
 
 function renderBeforeAfter(model) {
   return `
-    <section class="change-board" aria-label="思考の変化">
+    <section class="change-board" aria-label="考えの変化">
       <article>
         <span>Before</span>
         <h2>最初の見方</h2>
@@ -769,7 +769,7 @@ function renderTeacherNote() {
       </div>
       <p>
         これはテストの点数ではありません。
-        「何を疑問に思ったか」「自分ではどう予想したか」「何を確かめて考え直したか」「どんな気づきを次に使える形にしたか」を、
+        「何をふしぎに思ったか」「自分ではどう予想したか」「何をたしかめて考え直したか」「どんななるほどを次のコツにしたか」を、
         学習者の言葉からたどるためのページです。
       </p>
     </section>`;
@@ -785,7 +785,7 @@ function renderHtml(model) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>思考深化レポート | 学習ハーネス</title>
+  <title>まなびレポート | 学習ハーネス</title>
   <style>
     :root {
       color-scheme: light;
@@ -1333,20 +1333,20 @@ function renderHtml(model) {
       <div>生成日時: ${escapeHtml(model.generatedAt)}</div>
     </header>
 
-    <section class="hero" aria-label="思考深化レポートの概要">
+    <section class="hero" aria-label="まなびレポートの概要">
       <div class="hero-main">
         <div>
-          <span class="eyebrow">Thinking Depth Report</span>
+          <span class="eyebrow">Learning Report</span>
           <h1>${escapeHtml(model.title)}</h1>
         </div>
-        <p>${escapeHtml(model.goal || "このHTMLは、今回の学習で考えがどう深まったかを、中学生にも読みやすい形でまとめたものです。")}</p>
+        <p>${escapeHtml(model.goal || "このHTMLは、今回の学習で考えがどう育ったかを、小学生にも読みやすい形でまとめたものです。")}</p>
         <div class="meta-row">
           ${sourceLink}
-          <span>点数ではなく、思考の道すじを見る</span>
+          <span>点数ではなく、考えの道すじを見る</span>
         </div>
       </div>
 
-      <aside class="stage-card" aria-label="今回の思考の現在地">
+      <aside class="stage-card" aria-label="今回のまなびの現在地">
         <div>
           <span class="stage-card__label">今回の現在地</span>
           <strong>${escapeHtml(model.stage.title)}</strong>
@@ -1356,11 +1356,11 @@ function renderHtml(model) {
       </aside>
     </section>
 
-    <section aria-label="思考の道すじ">
+    <section aria-label="考えの道すじ">
       <div class="section-head">
         <div>
           <span class="eyebrow">Route Map</span>
-          <h2>どう考えが進んだか</h2>
+          <h2>どう考えが育ったか</h2>
         </div>
         <p>棒の長さは点数ではありません。学習ログから、その考え方がどれくらいはっきり読めるかを表しています。</p>
       </div>
@@ -1371,8 +1371,8 @@ function renderHtml(model) {
 
     ${renderBeforeAfter(model)}
 
-    <section class="next-card" aria-label="次に使うこと">
-      <h2>次に使えること</h2>
+    <section class="next-card" aria-label="次のコツ">
+      <h2>次のコツ</h2>
       ${renderActionList(model.actionItems, model.stage.next)}
     </section>
 
@@ -1423,7 +1423,7 @@ function renderMarkdown(model) {
   ].join("\n");
 
   return [
-    `# 思考深化レポート: ${model.title}`,
+    `# まなびレポート: ${model.title}`,
     "",
     "このファイルは、GitHub Pagesの権限や設定でHTML公開ができない場合でも学習の成果を読めるようにするためのMarkdown版です。",
     "",
@@ -1435,7 +1435,7 @@ function renderMarkdown(model) {
     `- 目標: ${markdownValue(model.goal)}`,
     `- 最初の見方: ${markdownValue(model.firstView || model.blockers)}`,
     "",
-    "## 思考の道すじ",
+    "## 考えの道すじ",
     "",
     phaseRows,
     "",
@@ -1448,7 +1448,7 @@ function renderMarkdown(model) {
     `- 最初: ${markdownValue(model.before)}`,
     `- 後から見えたこと: ${markdownValue(model.after)}`,
     "",
-    "## 次に使えること",
+    "## 次のコツ",
     "",
     actionItems,
     "",

@@ -1,7 +1,7 @@
-name: 間違いレビュー
-description: 間違えた問題を分析して再発防止する
+name: まちがい発見カード
+description: まちがいを責めずに、次に使える発見へ変える
 title: "[間違い] "
-labels: ["status:ready", "type:mistake", "needs:review", "portfolio:show"]
+labels: ["状態:はじめられる", "種類:まちがい発見", "助け:見直し", "公開:のせる"]
 body:
   - type: input
     id: subject
@@ -14,37 +14,38 @@ body:
     id: problem
     attributes:
       label: 問題
-      description: 問題文または概要を書く
+      description: 問題文、写真の内容、またはどんな問題だったかを書く
     validations:
       required: true
   - type: textarea
     id: my_answer
     attributes:
       label: 自分の解答
-      description: 間違えた解答、途中式、考え方を書く
+      description: まちがえた答え、途中式、なぜそう考えたかを書く
     validations:
       required: true
   - type: textarea
     id: correct_answer
     attributes:
-      label: 正解・解説
-      description: わかっている場合だけ書く
+      label: 正解・ヒント
+      description: わかっている場合だけ書く。まだなら空でよい
     validations:
       required: false
   - type: textarea
     id: why_wrong
     attributes:
-      label: 自分ではなぜ間違えたと思うか
+      label: 自分ではどこでずれたと思うか
+      description: 「計算」「読み取り」「思いこみ」「見落とし」など、予想でよい
     validations:
       required: true
   - type: textarea
     id: review_goal
     attributes:
-      label: レビューで明らかにしたいこと
+      label: 発見したいこと
       value: |
-        - どこまでは正しかったか
-        - どこでずれたか
-        - 次に同じミスを防ぐには何を見るか
-        - 復習用の類題
+        - どこまでは合っていたか
+        - どこで考えがずれたか
+        - 次に同じまちがいを防ぐには何を見るか
+        - たしかめ用の似た問題
     validations:
       required: true

@@ -201,27 +201,27 @@ function checkYamlTemplates() {
     } else {
       const countPrefix = (prefix) =>
         parsed.labels.filter((label) => label.startsWith(prefix)).length;
-      const typeCount = countPrefix("type:");
-      const statusCount = countPrefix("status:");
-      const portfolioCount = countPrefix("portfolio:");
+      const typeCount = countPrefix("種類:");
+      const statusCount = countPrefix("状態:");
+      const portfolioCount = countPrefix("公開:");
 
       if (typeCount !== 1) {
-        errors.push(`${relativePath}: labels must include exactly one type:* label`);
+        errors.push(`${relativePath}: labels must include exactly one 種類:* label`);
       }
       if (statusCount !== 1) {
-        errors.push(`${relativePath}: labels must include exactly one status:* label`);
+        errors.push(`${relativePath}: labels must include exactly one 状態:* label`);
       }
       if (portfolioCount !== 1) {
         errors.push(
-          `${relativePath}: labels must include exactly one portfolio:* label`,
+          `${relativePath}: labels must include exactly one 公開:* label`,
         );
       }
       if (
-        parsed.labels.includes("portfolio:show") &&
-        parsed.labels.includes("portfolio:hide")
+        parsed.labels.includes("公開:のせる") &&
+        parsed.labels.includes("公開:のせない")
       ) {
         errors.push(
-          `${relativePath}: labels must not include both portfolio:show and portfolio:hide`,
+          `${relativePath}: labels must not include both 公開:のせる and 公開:のせない`,
         );
       }
     }

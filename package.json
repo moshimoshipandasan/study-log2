@@ -9,7 +9,8 @@
     "build:thinking-depth": "node scripts/build-thinking-depth-html.mjs",
     "harness:end-report": "node scripts/build-thinking-depth-html.mjs",
     "check": "node scripts/check-learning-harness.mjs",
-    "sync-labels": "node scripts/sync-labels.mjs"
+    "sync-labels": "node scripts/sync-labels.mjs",
+    "setup:harness": "npm run sync-labels && npm run check && npm run build:portfolio && npm run build:thinking-depth"
   },
   "devDependencies": {
     "yaml": "^2.8.1"

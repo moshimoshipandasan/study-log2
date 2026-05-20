@@ -1,0 +1,25 @@
+{
+  "name": "Codex Study Harness",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-24-bookworm",
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "postCreateCommand": "npm install && npm run check",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "GitHub.copilot",
+        "GitHub.copilot-chat",
+        "GitHub.vscode-github-actions",
+        "DavidAnson.vscode-markdownlint"
+      ],
+      "settings": {
+        "github.copilot.chat.codeGeneration.instructions": [
+          {
+            "text": "このリポジトリではAGENTS.mdとREADME.mdに従い、小学生向けの学習ハーネスとして、Issueと学習ログを日本語で記録してください。"
+          }
+        ]
+      }
+    }
+  }
+}

@@ -5,8 +5,8 @@ import path from "node:path";
 const root = process.cwd();
 const outputPath = path.join(root, "public", "index.html");
 const markdownOutputPath = path.join(root, "public", "portfolio.md");
-const showLabel = "portfolio:show";
-const hideLabel = "portfolio:hide";
+const showLabel = "公開:のせる";
+const hideLabel = "公開:のせない";
 
 function runGit(args) {
   return execFileSync("git", args, {
@@ -170,12 +170,12 @@ function countMarkdownItems(value) {
 
 function analyzeThinking(commentSections) {
   const markers = [
-    { key: "questions", label: "問い", headings: ["問題提起"] },
-    { key: "hypotheses", label: "仮説", headings: ["学習者の仮説・考え", "まず自分で考えたこと", "自分で考えたこと"] },
-    { key: "shifts", label: "転換", headings: ["思考の変化"] },
-    { key: "insights", label: "知見", headings: ["得た知見", "なるほどポイント"] },
-    { key: "criteria", label: "判断", headings: ["次に使える判断基準"] },
-    { key: "practice", label: "確認", headings: ["次の確認問題", "確認問題の結果", "類題・確認問題の結果"] },
+    { key: "questions", label: "ふしぎ", headings: ["問題提起", "ふしぎ・知りたいこと", "ふしぎ・わからないこと"] },
+    { key: "hypotheses", label: "予想", headings: ["学習者の仮説・考え", "まず自分で考えたこと", "自分で考えたこと"] },
+    { key: "shifts", label: "考えの変化", headings: ["思考の変化", "考えが変わったところ"] },
+    { key: "insights", label: "なるほど", headings: ["得た知見", "なるほどポイント", "わくわくポイント"] },
+    { key: "criteria", label: "次のコツ", headings: ["次に使える判断基準", "レベルアップのゴール"] },
+    { key: "practice", label: "たしかめ", headings: ["次の確認問題", "確認問題の結果", "類題・確認問題の結果", "たしかめたいこと"] },
   ];
 
   const counts = Object.fromEntries(markers.map((marker) => [marker.key, 0]));
@@ -215,27 +215,28 @@ function labelNames(issue) {
 }
 
 function subjectFromLabels(labels) {
-  const subjectLabel = labels.find((label) => label.startsWith("subject:"));
+  const subjectLabel = labels.find((label) => label.startsWith("教科:"));
   const map = {
-    "subject:math": "数学",
-    "subject:english": "英語",
-    "subject:japanese": "国語",
-    "subject:science": "理科",
-    "subject:social": "社会",
-    "subject:programming": "プログラミング",
+    "教科:算数": "算数",
+    "教科:英語": "英語",
+    "教科:国語": "国語",
+    "教科:理科": "理科",
+    "教科:社会": "社会",
+    "教科:プログラミング": "プログラミング",
   };
 
-  return map[subjectLabel] ?? subjectLabel?.replace("subject:", "") ?? "未分類";
+  return map[subjectLabel] ?? subjectLabel?.replace("教科:", "") ?? "未分類";
 }
 
 function issueType(labels) {
-  if (labels.includes("type:mistake")) return "間違いレビュー";
-  if (labels.includes("type:question")) return "問題提起";
-  if (labels.includes("type:review")) return "復習";
-  if (labels.includes("type:test-prep")) return "テスト準備";
-  if (labels.includes("type:practice")) return "演習";
-  if (labels.includes("type:writing")) return "記述";
-  return "学習課題";
+  if (labels.includes("種類:まちがい発見")) return "まちがい発見";
+  if (labels.includes("種類:ふしぎメモ")) return "ふしぎメモ";
+  if (labels.includes("種類:ふりかえり")) return "ふりかえり";
+  if (labels.includes("種類:テスト練習")) return "テスト練習";
+  if (labels.includes("種類:練習する")) return "練習";
+  if (labels.includes("種類:文章を書く")) return "文章を書く";
+  if (labels.includes("種類:しくみを知る")) return "しくみを知る";
+  return labels.find((label) => label.startsWith("種類:"))?.replace("種類:", "") ?? "まなび";
 }
 
 function displaySubject(value) {
@@ -253,24 +254,24 @@ function parseIssue(issue, comments) {
   const labels = labelNames(issue);
   const thinking = analyzeThinking(commentSections);
 
-  const rawTopic = firstSection(allSections, ["学習テーマ", "問題提起", "問題"]);
+  const rawTopic = firstSection(allSections, ["学習テーマ", "問題提起", "ふしぎ・知りたいこと", "問題"]);
   const topic = rawTopic ? compactMarkdown(rawTopic, 96) : issue.title.replace(/^\[[^\]]+\]\s*/, "");
 
-  const goal = compactMarkdown(firstSection(allSections, ["目的", "レビューで明らかにしたいこと"]), 180);
-  const firstView = compactMarkdown(firstSection(allSections, ["最初の見方", "現在の理解", "最初の理解"]), 180);
-  const blockers = compactMarkdown(firstSection(allSections, ["わからないこと", "わからなかったこと", "確認したいこと"]), 180);
+  const goal = compactMarkdown(firstSection(allSections, ["今日のめあて", "目的", "レビューで明らかにしたいこと", "発見したいこと"]), 180);
+  const firstView = compactMarkdown(firstSection(allSections, ["最初の見方", "現在の理解", "最初の理解", "今わかっていること"]), 180);
+  const blockers = compactMarkdown(firstSection(allSections, ["ふしぎ・わからないこと", "ふしぎ・知りたいこと", "わからないこと", "わからなかったこと", "確認したいこと", "たしかめたいこと"]), 180);
   const ownAttempt = compactMarkdown(firstSection(allSections, ["まず自分で考えたこと", "自分で考えたこと", "学習者の仮説・考え"]), 180);
-  const thinkingChange = compactMarkdown(firstSection(allSections, ["思考の変化"]), 220);
-  const insight = compactMarkdown(firstSection(allSections, ["得た知見", "なるほどポイント", "今日できるようになったこと"]), 220);
-  const criteria = compactMarkdown(firstSection(allSections, ["次に使える判断基準"]), 220);
-  const practice = compactMarkdown(firstSection(allSections, ["確認問題の結果", "類題・確認問題の結果", "次の確認問題"]), 180);
-  const misunderstanding = compactMarkdown(firstSection(allSections, ["間違いの原因・誤解しやすい点", "間違いの原因", "誤解しやすい点"]), 180);
+  const thinkingChange = compactMarkdown(firstSection(allSections, ["思考の変化", "考えが変わったところ"]), 220);
+  const insight = compactMarkdown(firstSection(allSections, ["得た知見", "なるほどポイント", "わくわくポイント", "今日できるようになったこと"]), 220);
+  const criteria = compactMarkdown(firstSection(allSections, ["次に使える判断基準", "レベルアップのゴール"]), 220);
+  const practice = compactMarkdown(firstSection(allSections, ["確認問題の結果", "類題・確認問題の結果", "次の確認問題", "たしかめたいこと"]), 180);
+  const misunderstanding = compactMarkdown(firstSection(allSections, ["間違いの原因・誤解しやすい点", "間違いの原因", "誤解しやすい点", "自分ではどこでずれたと思うか"]), 180);
   const review = compactMarkdown(firstSection(allSections, ["次回復習", "次回復習すること", "次回復習日"]), 160);
   const nextTask = compactMarkdown(firstSection(allSections, ["次の課題候補", "まだ不安なこと"]), 180);
   const artifacts = extractArtifactLinks(firstSection(allSections, ["成果物"]));
   const thinkingWords = comments.reduce((sum, comment) => sum + normalize(comment.body ?? "").length, 0);
-  const insightItems = countMarkdownItems(firstSection(allSections, ["得た知見", "なるほどポイント", "今日できるようになったこと"]));
-  const criteriaItems = countMarkdownItems(firstSection(allSections, ["次に使える判断基準"]));
+  const insightItems = countMarkdownItems(firstSection(allSections, ["得た知見", "なるほどポイント", "わくわくポイント", "今日できるようになったこと"]));
+  const criteriaItems = countMarkdownItems(firstSection(allSections, ["次に使える判断基準", "レベルアップのゴール"]));
 
   return {
     number: issue.number,
@@ -336,10 +337,10 @@ function journeyValue(...values) {
 function journeySteps(item) {
   return [
     {
-      label: "問い",
+      label: "ふしぎ",
       question: "何を知りたいと思った？",
       value: journeyValue(item.blockers, item.topic),
-      empty: "まだ問いがはっきり書かれていません。",
+      empty: "まだ「なぜ？」「知りたい！」がはっきり書かれていません。",
     },
     {
       label: "予想",
@@ -348,10 +349,10 @@ function journeySteps(item) {
       empty: "答えを見る前の予想がまだ少ないです。",
     },
     {
-      label: "確認",
-      question: "何で確かめた？",
+      label: "たしかめ",
+      question: "何でたしかめた？",
       value: journeyValue(item.practice, item.misunderstanding),
-      empty: "確認問題や根拠確認を足すと道すじが見えます。",
+      empty: "たしかめ問題や調べたことを足すと、道すじが見えます。",
     },
     {
       label: "考え直し",
@@ -360,14 +361,14 @@ function journeySteps(item) {
       empty: "最初と今の考えの違いを一文で書くとよくなります。",
     },
     {
-      label: "気づき",
-      question: "何がわかった？",
+      label: "なるほど",
+      question: "何がわかって、わくわくした？",
       value: journeyValue(item.insight),
       empty: "新しく説明できるようになったことを残します。",
     },
     {
-      label: "次に使う",
-      question: "次はどう使う？",
+      label: "次のコツ",
+      question: "次はどんなコツを使う？",
       value: journeyValue(item.criteria, item.review, item.nextTask),
       empty: "次に似た問題で使う見分け方や復習予定を残します。",
     },
@@ -380,10 +381,10 @@ function visibleJourneyCount(item) {
 
 function journeyReadLabel(item) {
   const visible = visibleJourneyCount(item);
-  if (visible >= 5) return "思考の深まりがはっきり読める";
-  if (visible >= 3) return "考えた道すじが見え始めている";
-  if (visible >= 1) return "学習の材料が残っている";
-  return "これから記録する";
+  if (visible >= 5) return "レベルアップの道すじがはっきり見える";
+  if (visible >= 3) return "考えの成長が見え始めている";
+  if (visible >= 1) return "まなびのたねが残っている";
+  return "これから育てる";
 }
 
 function renderJourneyRail(item) {
@@ -427,7 +428,7 @@ function renderFeaturedJourney(item) {
         <h2>掲載対象のIssueがまだありません</h2>
         <p>
           <code>${escapeHtml(showLabel)}</code> ラベルを付けたIssueが追加されると、
-          その学習で「問い」から「次に使う」まで考えがどう深まったかを表示します。
+          その学習で「ふしぎ」から「次のコツ」まで考えがどう育ったかを表示します。
         </p>
       </section>`;
   }
@@ -435,18 +436,18 @@ function renderFeaturedJourney(item) {
   return `
     <section class="featured-journey" aria-label="最新の思考の道すじ">
       <div class="featured-copy">
-        <span class="eyebrow">Latest Learning Journey</span>
+        <span class="eyebrow">Latest Learning Adventure</span>
         <h2>${escapeHtml(item.topic)}</h2>
-        <p>${escapeHtml(item.goal || "この学習で、どのように考えが深まったかをIssueの記録からたどります。")}</p>
+        <p>${escapeHtml(item.goal || "この学習で、最初のふしぎからどんな発見に進んだかをIssueの記録からたどります。")}</p>
         <div class="featured-actions">
           <a href="${escapeHtml(item.url)}">Issueを読む</a>
           <a href="thinking-depth.html">最新レポートを見る</a>
         </div>
       </div>
       <aside class="featured-status">
-        <span>今の見え方</span>
+        <span>成長の見え方</span>
         <strong>${escapeHtml(journeyReadLabel(item))}</strong>
-        <p>点数ではなく、本人の問い、予想、確認、考え直し、気づきがつながって読めるかを見ます。</p>
+        <p>点数ではなく、本人のふしぎ、予想、たしかめ、考え直し、なるほどがつながって読めるかを見ます。</p>
       </aside>
       ${renderJourneyRail(item)}
     </section>`;
@@ -484,16 +485,16 @@ function renderLearningJourneyHtml(items, repository) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>思考の道すじ | 学習ハーネス</title>
+  <title>まなびの冒険マップ | 学習ハーネス</title>
   <style>
     :root {
       color-scheme: light;
-      --paper: #f7f4ec;
+      --paper: #f7fbf2;
       --surface: #fffdf7;
       --surface-strong: #ffffff;
       --ink: #1f2528;
       --muted: #657074;
-      --line: #d8d0c0;
+      --line: #d6dfca;
       --teal: #08736e;
       --blue: #2c5c9f;
       --green: #54783d;
@@ -510,8 +511,8 @@ function renderLearningJourneyHtml(items, repository) {
       margin: 0;
       color: var(--ink);
       background:
-        linear-gradient(90deg, rgba(8, 115, 110, 0.06) 1px, transparent 1px) 0 0 / 48px 48px,
-        linear-gradient(rgba(44, 92, 159, 0.045) 1px, transparent 1px) 0 0 / 48px 48px,
+        linear-gradient(90deg, rgba(8, 115, 110, 0.05) 1px, transparent 1px) 0 0 / 48px 48px,
+        linear-gradient(rgba(212, 155, 42, 0.07) 1px, transparent 1px) 0 0 / 48px 48px,
         var(--paper);
       font-family: "BIZ UDPGothic", "Yu Gothic", "Hiragino Sans", Meiryo, sans-serif;
       line-height: 1.75;
@@ -958,32 +959,33 @@ function renderLearningJourneyHtml(items, repository) {
 
     <section class="hero" aria-label="ページ概要">
       <div class="hero-copy">
-        <span class="eyebrow">Thinking Journey</span>
-        <h1>思考の道すじを見る</h1>
+        <span class="eyebrow">Learning Adventure</span>
+        <h1>まなびの冒険マップ</h1>
         <p>
-          このページは、対象者がどうやって考えを深めたかを中学生にも読める言葉でまとめます。
-          難しい評価理論や点数ではなく、問い、予想、確認、考え直し、気づき、次に使うことの順番で読みます。
+          このページは、学習者がどんな「ふしぎ」から出発し、どんな予想をして、何をたしかめ、
+          どこで「なるほど」と思ったかを小学生にも読める言葉でまとめます。
+          点数ではなく、自分の考えが育った道すじを見ます。
         </p>
       </div>
       <aside class="reading-guide" aria-label="読み方">
-        <div class="guide-row"><span>1</span><div><strong>問いを見る</strong><p>最初に何を不思議に思ったかを確認します。</p></div></div>
+        <div class="guide-row"><span>1</span><div><strong>ふしぎを見る</strong><p>最初に何を「知りたい」と思ったかを確認します。</p></div></div>
         <div class="guide-row"><span>2</span><div><strong>予想を見る</strong><p>答えを聞く前に、自分ではどう考えたかを見ます。</p></div></div>
         <div class="guide-row"><span>3</span><div><strong>変化を見る</strong><p>確認したことで、考えがどう変わったかを見ます。</p></div></div>
-        <div class="guide-row"><span>4</span><div><strong>次に使う</strong><p>得た気づきを、次の問題で使える形にしたかを見ます。</p></div></div>
+        <div class="guide-row"><span>4</span><div><strong>次のコツを見る</strong><p>発見したことを、次の問題で使える形にしたかを見ます。</p></div></div>
       </aside>
     </section>
 
     <section class="summary-strip" aria-label="学習記録の概要">
-      <article><span>掲載された学習</span><strong>${items.length}</strong></article>
-      <article><span>完了した学習</span><strong>${closed}</strong></article>
-      <article><span>道すじがはっきり読める学習</span><strong>${readable}</strong></article>
+      <article><span>まなびカード</span><strong>${items.length}</strong></article>
+      <article><span>クリアしたカード</span><strong>${closed}</strong></article>
+      <article><span>成長がはっきり見えるカード</span><strong>${readable}</strong></article>
     </section>
 
     ${renderFeaturedJourney(featured)}
 
-    <section class="section-head" aria-label="学習ごとの思考の道すじ">
-      <h2>学習ごとの記録</h2>
-      <p>各Issueについて、本人の言葉から読み取れる思考の深まりを、同じ順番で並べます。</p>
+    <section class="section-head" aria-label="学習ごとの成長の道すじ">
+      <h2>カードごとの冒険ログ</h2>
+      <p>各Issueについて、本人の言葉から読み取れる考えの成長を、同じ順番で並べます。</p>
     </section>
 
     <section class="journey-list">
@@ -992,8 +994,8 @@ function renderLearningJourneyHtml(items, repository) {
           ? recent.map(renderJourneyCard).join("\n")
           : `<section class="empty-journey">
               <span>No Issues</span>
-              <h2>まだ表示できる学習記録がありません</h2>
-              <p><code>${escapeHtml(showLabel)}</code> ラベル付きIssueが追加されると、ここに思考の道すじが表示されます。</p>
+              <h2>まだ表示できるまなびカードがありません</h2>
+              <p><code>${escapeHtml(showLabel)}</code> ラベル付きIssueが追加されると、ここにまなびの冒険マップが表示されます。</p>
             </section>`
       }
     </section>
@@ -1017,8 +1019,8 @@ function renderPortfolioMarkdown(items, repository) {
     ["対象リポジトリ", repository],
     ["公開対象Issue", `${items.length}件`],
     ["完了済みIssue", `${closed}件`],
-    ["思考の道すじが読めるIssue", `${readable}件`],
-    ["思考ループの記録", `${totalLoops}件`],
+    ["成長の道すじが読めるIssue", `${readable}件`],
+    ["まなびの一周記録", `${totalLoops}件`],
   ];
 
   const overview = [
@@ -1030,17 +1032,17 @@ function renderPortfolioMarkdown(items, repository) {
   ].join("\n");
 
   const issueRows = [
-    "| Issue | テーマ | 教科 | 種別 | 状態 | 思考サイン | 更新日 |",
+    "| Issue | テーマ | 教科 | 種別 | 状態 | まなびサイン | 更新日 |",
     "| --- | --- | --- | --- | --- | --- | --- |",
     ...recent.map((item) => {
       const issueLink = item.url ? `[#${item.number}](${item.url})` : `#${item.number}`;
       const markers = [
-        item.thinking.questions ? "問い" : "",
+        item.thinking.questions ? "ふしぎ" : "",
         item.thinking.hypotheses ? "予想" : "",
         item.thinking.shifts ? "考え直し" : "",
-        item.thinking.insights ? "気づき" : "",
-        item.thinking.criteria ? "使い方" : "",
-        item.thinking.practice ? "確認" : "",
+        item.thinking.insights ? "なるほど" : "",
+        item.thinking.criteria ? "次のコツ" : "",
+        item.thinking.practice ? "たしかめ" : "",
       ]
         .filter(Boolean)
         .join(" / ");
@@ -1075,7 +1077,7 @@ function renderPortfolioMarkdown(items, repository) {
         `- 更新日: ${formatDate(item.updatedAt) || "未記録"}`,
         `- ラベル: ${labels}`,
         "",
-        "### 思考の道すじ",
+        "### まなびの道すじ",
         "",
         journey,
         "",
@@ -1091,10 +1093,10 @@ function renderPortfolioMarkdown(items, repository) {
     .join("\n\n");
 
   return [
-    "# 学習ポートフォリオ Markdown版",
+    "# まなびの冒険マップ Markdown版",
     "",
     "このファイルは、GitHub Pagesの権限や設定でHTML公開ができない場合でも学習の成果を読めるようにするためのフォールバックです。",
-    "`portfolio:show` が付いたIssueを集め、Issue本文とコメントから思考の道すじを整理しています。",
+    "`公開:のせる` が付いたIssueを集め、Issue本文とコメントから考えの成長を整理しています。",
     "",
     "## 概要",
     "",

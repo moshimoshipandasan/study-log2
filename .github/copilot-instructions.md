@@ -8,7 +8,7 @@ Purpose: give future Copilot/Copilot-like sessions quick, actionable guidance fo
 - Install deps: `npm install` (Node.js >= 14.6)
 - Repository checks (CI-equivalent): `npm run check`
   - Runs scripts/check-learning-harness.mjs to validate templates, required docs, and learning-log structure.
-- Sync GitHub labels: `npm run sync-labels` (requires `gh auth login` to be authenticated)
+- Sync GitHub labels locally: `npm run sync-labels` (requires `gh auth login` to be authenticated). In GitHub Actions, the same script uses `GITHUB_TOKEN`.
 
 Notes: there is no test suite or linter configured. Use `npm run check` as the primary verification step. No per-test runner exists in this repo.
 
@@ -21,9 +21,9 @@ Notes: there is no test suite or linter configured. Use `npm run check` as the p
   - `docs/` — workflow and checklist docs that define required headings and QA rules for learning logs.
   - `scripts/` — small Node.js (ESM) scripts:
     - `check-learning-harness.mjs` — verifies YAML/Issue templates, presence of required docs, and learning-log minimum headings.
-    - `sync-labels.mjs` — uses `config/labels.json` to create/update GitHub labels via `gh`.
+  - `sync-labels.mjs` — uses `config/labels.json` to create/update GitHub labels via GitHub API in Actions or `gh` locally.
   - `.github/ISSUE_TEMPLATE/` and `.github/workflows/` — templates and CI that rely on the `check` script.
-  - `config/labels.json` — canonical label set (subject:, type:, status:, needs:, difficulty:, risk:, close:).
+  - `config/labels.json` — canonical Japanese label set (`教科:`, `種類:`, `状態:`, `公開:`, `助け:`, `むずかしさ:`, `注意:`, `閉じる目安:`).
 
 - Runtime / platform: Node.js ESM module type in package.json; only lightweight dev dependency is `yaml`.
 
@@ -34,8 +34,8 @@ Notes: there is no test suite or linter configured. Use `npm run check` as the p
   - Primary language for learning logs, issues, and docs is Japanese; follow `docs/` checklists when generating learning content.
   - Learning-log entries must include specific headings (problem, initial thought, turning point, insight, next-review) — `check` enforces this.
 - Issue/label conventions:
-  - Labels are namespaced and semantic. Examples: `subject:math`, `type:mistake`, `status:reviewing`, `needs:hint`, `difficulty:easy`, `risk:exam`, `close:on-understood`.
-  - At harness start, organize labels before recording. Every learning Issue should have exactly one `type:*`, one `status:*`, and one `portfolio:*` label; add `subject:*`, `needs:*`, and `difficulty:*` when they are clear.
+  - Labels are namespaced and semantic in Japanese. Examples: `教科:算数`, `種類:まちがい発見`, `状態:見直し中`, `助け:ヒント`, `むずかしさ:やさしい`, `注意:テスト関係`, `閉じる目安:説明できた`.
+  - At harness start, organize labels before recording. Every learning Issue should have exactly one `種類:*`, one `状態:*`, and one `公開:*` label; add `教科:*`, `助け:*`, and `むずかしさ:*` when they are clear.
   - Use `npm run sync-labels` to reconcile labels with `config/labels.json` when updating label policies.
 - Agent prompts and modes:
   - Prompts in `prompts/` express modes: `ヒントモード` (hint), `添削モード` (review), `解説モード` (explain), `類題モード` (practice), `振り返りモード` (reflection), `テストモード` (test).
