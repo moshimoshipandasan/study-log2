@@ -149,6 +149,27 @@ function compactMarkdown(value, maxLength = 240) {
   return `${compact.slice(0, maxLength - 1).trim()}...`;
 }
 
+function compactUseAgain(value, maxLength = 240) {
+  const lines = normalize(value)
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
+  const listItems = lines
+    .filter((line) => /^([-*]|\d+\.)\s+/.test(line))
+    .map((line) => line.replace(/^[-*]\s+/, "").replace(/^\d+\.\s+/, "").replace(/[。！？!?]+$/g, "").trim())
+    .filter(Boolean);
+
+  if (listItems.length >= 2) {
+    const intro =
+      lines.find((line) => !/^([-*]|\d+\.)\s+/.test(line)) ||
+      "次に似たものを見たときに、見た目だけで決めない。";
+    const text = `${intro.replace(/[。！？!?]+$/g, "")}。たしかめることは、${listItems.join("、")}です。`;
+    return compactMarkdown(text, maxLength);
+  }
+
+  return compactMarkdown(value, maxLength);
+}
+
 function uniqueValues(values) {
   const seen = new Set();
   return values.filter((value) => {
@@ -197,7 +218,7 @@ function analyzeThinking(commentSections) {
     { key: "hypotheses", label: "予想", headings: ["学習者の仮説・考え", "まず自分で考えたこと", "自分で考えたこと"] },
     { key: "shifts", label: "考えの変化", headings: ["思考の変化", "考えが変わったところ"] },
     { key: "insights", label: "なるほど", headings: ["得た知見", "なるほどポイント", "わくわくポイント"] },
-    { key: "criteria", label: "次のコツ", headings: ["次に使える判断基準", "レベルアップのゴール"] },
+    { key: "criteria", label: "見分け方", headings: ["次に使える判断基準", "レベルアップのゴール"] },
     { key: "practice", label: "たしかめ", headings: ["次の確認問題", "確認問題の結果", "類題・確認問題の結果", "たしかめたいこと"] },
   ];
 
@@ -287,7 +308,7 @@ function parseIssue(issue, comments) {
   const ownAttempt = compactMarkdown(firstSection(allSections, ["まず自分で考えたこと", "自分で考えたこと", "学習者の仮説・考え"]), 180);
   const thinkingChange = compactMarkdown(firstSection(allSections, ["思考の変化", "考えが変わったところ"]), 220);
   const insight = compactMarkdown(firstSection(allSections, ["得た知見", "なるほどポイント", "わくわくポイント", "今日できるようになったこと"]), 220);
-  const criteria = compactMarkdown(firstSection(allSections, ["次に使える判断基準", "レベルアップのゴール"]), 220);
+  const criteria = compactUseAgain(firstSection(allSections, ["次に使える判断基準", "レベルアップのゴール"]), 220);
   const practiceResult = firstSection(allSections, ["確認問題の結果", "類題・確認問題の結果"]);
   const practicePrompt = firstSection(allSections, ["次の確認問題", "たしかめたいこと"]);
   const practice = compactMarkdown(practiceResult || practicePrompt, 180);
@@ -393,8 +414,8 @@ function journeySteps(item) {
       empty: "新しく説明できるようになったことを残します。",
     },
     {
-      label: "次のコツ",
-      question: "次はどんなコツを使う？",
+      label: "見分け方",
+      question: "次は何をたしかめる？",
       value: journeyValue(item.criteria, item.review, item.nextTask),
       empty: "次に似た問題で使う見分け方や復習予定を残します。",
     },
@@ -442,7 +463,7 @@ function renderFeaturedJourney(item) {
         <h2>掲載対象のIssueがまだありません</h2>
         <p>
           <code>${escapeHtml(showLabel)}</code> ラベルを付けたIssueが追加されると、
-          その学習で「ふしぎ」から「次のコツ」まで考えがどう育ったかを表示します。
+          その学習で「ふしぎ」から「見分け方」まで考えがどう育ったかを表示します。
         </p>
       </section>`;
   }
@@ -990,7 +1011,7 @@ function renderLearningJourneyHtml(items, repository) {
         <div class="guide-row"><span>1</span><div><strong>ふしぎを見る</strong><p>最初に何を「知りたい」と思ったかを確認します。</p></div></div>
         <div class="guide-row"><span>2</span><div><strong>予想を見る</strong><p>答えを聞く前に、自分ではどう考えたかを見ます。</p></div></div>
         <div class="guide-row"><span>3</span><div><strong>変化を見る</strong><p>確認したことで、考えがどう変わったかを見ます。</p></div></div>
-        <div class="guide-row"><span>4</span><div><strong>次のコツを見る</strong><p>発見したことを、次の問題で使える形にしたかを見ます。</p></div></div>
+        <div class="guide-row"><span>4</span><div><strong>見分け方を見る</strong><p>次に似たものを見たとき、何をたしかめればよいかを見ます。</p></div></div>
       </aside>
     </section>
 
@@ -1056,7 +1077,7 @@ function renderPortfolioMarkdown(items, repository) {
         item.thinking.hypotheses ? "予想" : "",
         item.thinking.shifts ? "考え直し" : "",
         item.thinking.insights ? "なるほど" : "",
-        item.thinking.criteria ? "次のコツ" : "",
+        item.thinking.criteria ? "見分け方" : "",
         item.thinking.practice ? "たしかめ" : "",
       ]
         .filter(Boolean)
