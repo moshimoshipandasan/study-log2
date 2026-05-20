@@ -704,40 +704,35 @@ function determineStage(phaseModels, hasBasicRecord) {
   return { level, ...stages[level] };
 }
 
-function renderStagePath(stage) {
-  return `
-    <ol class="stage-path" aria-label="考えが育つ道すじ">
-      ${stages
-        .map((item, index) => {
-          const state = index < stage.level ? "is-done" : index === stage.level ? "is-current" : "";
-          return `
-            <li class="${state}">
-              <span class="stage-dot" aria-hidden="true"></span>
-              <strong>${escapeHtml(item.title)}</strong>
-              <small>${escapeHtml(item.short)}</small>
-            </li>`;
-        })
-        .join("")}
-    </ol>`;
-}
+function renderFocusCards(model) {
+  const pick = (key) => model.phases.find((phase) => phase.key === key)?.text || "";
+  const cards = [
+    {
+      label: "最初の予想",
+      title: "自分ではどう考えた？",
+      text: pick("hypothesis") || model.before || "最初の予想がまだ少ないです。",
+    },
+    {
+      label: "たしかめ",
+      title: "何を見て考えた？",
+      text: pick("check") || "たしかめたことがまだ少ないです。",
+    },
+    {
+      label: "気づき",
+      title: "何がわかった？",
+      text: pick("insight") || model.after || "わかったことをもう一文で残すと読みやすくなります。",
+    },
+  ];
 
-function renderPhaseCards(phasesToRender) {
   return `
-    <div class="phase-grid">
-      ${phasesToRender
+    <div class="focus-grid">
+      ${cards
         .map(
-          (phase) => `
-            <article class="phase-card ${phase.strength > 0 ? "has-evidence" : "is-empty"}">
-              <div class="phase-card__head">
-                <span>${escapeHtml(phase.label)}</span>
-                <b>${escapeHtml(phase.status)}</b>
-              </div>
-              <h3>${escapeHtml(phase.friendly)}</h3>
-              <p>${escapeHtml(phase.text)}</p>
-              <div class="evidence-meter" aria-label="${escapeHtml(phase.label)}の見え方: ${escapeHtml(phase.status)}">
-                <i style="width:${phase.width}%"></i>
-              </div>
-              <small>${escapeHtml(phase.hint)}</small>
+          (card) => `
+            <article class="focus-card">
+              <span>${escapeHtml(card.label)}</span>
+              <h3>${escapeHtml(card.title)}</h3>
+              <p>${escapeHtml(card.text)}</p>
             </article>`,
         )
         .join("")}
@@ -901,7 +896,7 @@ function renderHtml(model) {
 
     .hero-main,
     .stage-card,
-    .phase-card,
+    .focus-card,
     .loop-board,
     .change-board article,
     .next-card,
@@ -958,7 +953,7 @@ function renderHtml(model) {
 
     .hero-main p,
     .stage-card p,
-    .phase-card p,
+    .focus-card p,
     .loop-steps p,
     .change-board p,
     .teacher-note p {
@@ -1007,63 +1002,6 @@ function renderHtml(model) {
       color: var(--blue);
     }
 
-    .stage-path {
-      list-style: none;
-      display: grid;
-      gap: 10px;
-      margin: 0;
-      padding: 0;
-    }
-
-    .stage-path li {
-      display: grid;
-      grid-template-columns: 22px minmax(0, 1fr);
-      gap: 9px 10px;
-      align-items: center;
-      color: var(--muted);
-    }
-
-    .stage-path strong,
-    .stage-path small {
-      display: block;
-      grid-column: 2;
-    }
-
-    .stage-path strong {
-      color: inherit;
-      font-size: 0.95rem;
-    }
-
-    .stage-path small {
-      margin-top: -9px;
-      font-size: 0.76rem;
-    }
-
-    .stage-dot {
-      grid-row: span 2;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      border: 3px solid #cfc7b8;
-      background: var(--surface);
-    }
-
-    .stage-path .is-done,
-    .stage-path .is-current {
-      color: var(--ink);
-    }
-
-    .stage-path .is-done .stage-dot {
-      border-color: var(--teal);
-      background: var(--teal);
-    }
-
-    .stage-path .is-current .stage-dot {
-      border-color: var(--orange);
-      background: var(--yellow);
-      box-shadow: 0 0 0 6px rgba(242, 201, 76, 0.24);
-    }
-
     .section-head {
       display: flex;
       justify-content: space-between;
@@ -1084,73 +1022,30 @@ function renderHtml(model) {
       font-size: 0.95rem;
     }
 
-    .phase-grid {
+    .focus-grid {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 14px;
     }
 
-    .phase-card {
+    .focus-card {
       padding: 20px;
       display: grid;
       gap: 12px;
-      min-height: 252px;
+      min-height: 220px;
       box-shadow: 0 10px 28px rgba(32, 36, 38, 0.1);
-    }
-
-    .phase-card.has-evidence {
       border-top: 6px solid var(--teal);
     }
 
-    .phase-card.is-empty {
-      border-style: dashed;
-      background: #f7f1e5;
-      box-shadow: none;
-    }
-
-    .phase-card__head {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      align-items: center;
-    }
-
-    .phase-card__head span {
+    .focus-card span {
       color: var(--blue);
       font-size: 0.8rem;
       font-weight: 800;
     }
 
-    .phase-card__head b {
-      padding: 4px 9px;
-      border-radius: 999px;
-      background: var(--surface-soft);
-      color: var(--green);
-      font-size: 0.74rem;
-    }
-
-    .phase-card h3 {
+    .focus-card h3 {
       font-size: 1.18rem;
       line-height: 1.35;
-    }
-
-    .phase-card small {
-      color: var(--muted);
-      font-size: 0.82rem;
-    }
-
-    .evidence-meter {
-      height: 12px;
-      overflow: hidden;
-      border-radius: 999px;
-      background: #e3dbcb;
-    }
-
-    .evidence-meter i {
-      display: block;
-      height: 100%;
-      border-radius: inherit;
-      background: linear-gradient(90deg, var(--teal), var(--yellow), var(--orange));
     }
 
     .loop-board {
@@ -1318,7 +1213,7 @@ function renderHtml(model) {
 
     @media (max-width: 860px) {
       .hero,
-      .phase-grid,
+      .focus-grid,
       .loop-steps,
       .change-board,
       .teacher-note {
@@ -1349,7 +1244,7 @@ function renderHtml(model) {
 
       .hero-main,
       .stage-card,
-      .phase-card,
+      .focus-card,
       .loop-board,
       .change-board article,
       .next-card,
@@ -1384,25 +1279,24 @@ function renderHtml(model) {
         </div>
       </div>
 
-      <aside class="stage-card" aria-label="今回のまなびの現在地">
+      <aside class="stage-card" aria-label="今回のまなびの読みどころ">
         <div>
-          <span class="stage-card__label">今回の現在地</span>
+          <span class="stage-card__label">今回の読みどころ</span>
           <strong>${escapeHtml(model.stage.title)}</strong>
         </div>
         <p>${escapeHtml(model.stage.description)}</p>
-        ${renderStagePath(model.stage)}
       </aside>
     </section>
 
     <section aria-label="考えの道すじ">
       <div class="section-head">
         <div>
-          <span class="eyebrow">Route Map</span>
-          <h2>どう考えが育ったか</h2>
+          <span class="eyebrow">Focus</span>
+          <h2>まずここを読む</h2>
         </div>
-        <p>棒の長さは点数ではありません。学習ログから、その考え方がどれくらいはっきり読めるかを表しています。</p>
+        <p>グラフではなく、本人の言葉から「予想」「たしかめ」「気づき」を短く拾います。</p>
       </div>
-      ${renderPhaseCards(model.phases)}
+      ${renderFocusCards(model)}
     </section>
 
     ${renderLearningLoop(model.learningLoop)}
