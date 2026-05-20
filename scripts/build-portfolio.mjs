@@ -413,24 +413,12 @@ function journeyReadLabel(item) {
   return "これから育てる";
 }
 
-function renderJourneyRail(item) {
-  return `
-    <ol class="journey-rail" aria-label="思考の道すじ">
-      ${journeySteps(item)
-        .map((step) => {
-          const seen = hasMeaning(step.value);
-          return `
-            <li class="${seen ? "is-seen" : "is-missing"}">
-              <span>${escapeHtml(step.label)}</span>
-              <strong>${seen ? "見える" : "これから"}</strong>
-            </li>`;
-        })
-        .join("")}
-    </ol>`;
-}
-
 function renderJourneySteps(item) {
   return `
+    <div class="journey-steps-head">
+      <span>学びの流れ</span>
+      <p>本人の言葉から、考えがどう進んだかを順番に読みます。</p>
+    </div>
     <div class="journey-steps">
       ${journeySteps(item)
         .map((step) => {
@@ -479,7 +467,6 @@ function renderFeaturedJourney(item) {
         <strong>${escapeHtml(journeyReadLabel(item))}</strong>
         <p>点数ではなく、本人のふしぎ、予想、たしかめ、考え直し、なるほどがつながって読めるかを見ます。</p>
       </aside>
-      ${renderJourneyRail(item)}
     </section>`;
 }
 
@@ -494,7 +481,6 @@ function renderJourneyCard(item) {
         <strong>${escapeHtml(journeyReadLabel(item))}</strong>
       </header>
       ${item.goal ? `<p class="goal">${escapeHtml(item.goal)}</p>` : ""}
-      ${renderJourneyRail(item)}
       ${renderJourneySteps(item)}
       <footer>
         <span>更新日 ${formatDate(item.updatedAt)}${item.closedAt ? ` / 完了日 ${formatDate(item.closedAt)}` : ""}</span>
@@ -637,10 +623,10 @@ function renderLearningJourneyHtml(items, repository) {
     h1, h2, h3, h4, p { margin-top: 0; }
 
     h1 {
-      max-width: 10em;
+      max-width: 13em;
       margin-bottom: 16px;
-      font-size: clamp(2.2rem, 5.5vw, 4.6rem);
-      line-height: 1.05;
+      font-size: clamp(1.95rem, 4.4vw, 3.35rem);
+      line-height: 1.12;
       letter-spacing: 0;
     }
 
@@ -809,63 +795,6 @@ function renderLearningJourneyHtml(items, repository) {
       line-height: 1.25;
     }
 
-    .journey-rail {
-      grid-column: 1 / -1;
-      display: grid;
-      grid-template-columns: repeat(6, minmax(0, 1fr));
-      gap: 8px;
-      margin: 0;
-      padding: 0;
-      list-style: none;
-    }
-
-    .journey-rail li {
-      min-height: 86px;
-      padding: 12px 10px;
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      background: var(--surface);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .journey-rail li::before {
-      content: "";
-      display: block;
-      width: 12px;
-      height: 12px;
-      border-radius: 999px;
-      margin-bottom: 9px;
-      background: #c9c3b6;
-    }
-
-    .journey-rail .is-seen {
-      border-color: rgba(8, 115, 110, 0.38);
-      background: linear-gradient(180deg, #ffffff, #eef8f4);
-    }
-
-    .journey-rail .is-seen::before {
-      background: var(--teal);
-      box-shadow: 0 0 0 6px rgba(8, 115, 110, 0.12);
-    }
-
-    .journey-rail span {
-      display: block;
-      font-weight: 900;
-    }
-
-    .journey-rail strong {
-      color: var(--muted);
-      font-size: 0.82rem;
-    }
-
-    .journey-rail li:nth-child(1)::before { background: var(--blue); }
-    .journey-rail li:nth-child(2)::before { background: var(--lavender); }
-    .journey-rail li:nth-child(3)::before { background: var(--teal); }
-    .journey-rail li:nth-child(4)::before { background: var(--amber); }
-    .journey-rail li:nth-child(5)::before { background: var(--coral); }
-    .journey-rail li:nth-child(6)::before { background: var(--green); }
-
     .section-head {
       margin: 34px 0 16px;
     }
@@ -919,7 +848,30 @@ function renderLearningJourneyHtml(items, repository) {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 12px;
-      margin-top: 16px;
+      margin-top: 12px;
+    }
+
+    .journey-steps-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: end;
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
+    }
+
+    .journey-steps-head span {
+      color: var(--blue);
+      font-size: 1.05rem;
+      font-weight: 900;
+    }
+
+    .journey-steps-head p {
+      max-width: 31rem;
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 0.9rem;
     }
 
     .journey-steps article {
@@ -1016,12 +968,9 @@ function renderLearningJourneyHtml(items, repository) {
         grid-template-columns: 1fr;
       }
 
-      .journey-rail {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
       .journey-card header,
       .journey-card footer,
+      .journey-steps-head,
       .topbar {
         align-items: stretch;
         flex-direction: column;
@@ -1039,13 +988,9 @@ function renderLearningJourneyHtml(items, repository) {
         padding-top: 18px;
       }
 
-      .journey-rail {
-        grid-template-columns: 1fr;
-      }
-
       h1 {
         max-width: none;
-        font-size: 2.25rem;
+        font-size: 2rem;
       }
 
       .hero-copy,
