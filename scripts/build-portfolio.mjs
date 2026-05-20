@@ -465,6 +465,10 @@ function renderFeaturedJourney(item) {
         <span class="eyebrow">Latest Learning Adventure</span>
         <h2>${escapeHtml(item.topic)}</h2>
         <p>${escapeHtml(item.goal || "この学習で、最初のふしぎからどんな発見に進んだかをIssueの記録からたどります。")}</p>
+        <div class="growth-note">
+          <span>今回の成長</span>
+          <strong>${escapeHtml(item.thinkingChange || item.insight || "ふしぎ、予想、たしかめをつなげて、考えの道すじを残しています。")}</strong>
+        </div>
         <div class="featured-actions">
           <a href="${escapeHtml(item.url)}">Issueを読む</a>
           <a href="thinking-depth.html">最新レポートを見る</a>
@@ -515,18 +519,19 @@ function renderLearningJourneyHtml(items, repository) {
   <style>
     :root {
       color-scheme: light;
-      --paper: #f7fbf2;
-      --surface: #fffdf7;
+      --paper: #f5f8fb;
+      --surface: #ffffff;
       --surface-strong: #ffffff;
-      --ink: #1f2528;
-      --muted: #657074;
-      --line: #d6dfca;
+      --ink: #172026;
+      --muted: #5c6870;
+      --line: #d9e2e8;
       --teal: #08736e;
-      --blue: #2c5c9f;
-      --green: #54783d;
-      --amber: #d49b2a;
-      --coral: #c6634a;
-      --shadow: 0 22px 60px rgba(31, 37, 40, 0.12);
+      --blue: #245aa6;
+      --green: #4e7c3b;
+      --amber: #d69522;
+      --coral: #c85f4c;
+      --lavender: #6c5aa8;
+      --shadow: 0 18px 45px rgba(23, 32, 38, 0.09);
     }
 
     * { box-sizing: border-box; }
@@ -537,8 +542,9 @@ function renderLearningJourneyHtml(items, repository) {
       margin: 0;
       color: var(--ink);
       background:
-        linear-gradient(90deg, rgba(8, 115, 110, 0.05) 1px, transparent 1px) 0 0 / 48px 48px,
-        linear-gradient(rgba(212, 155, 42, 0.07) 1px, transparent 1px) 0 0 / 48px 48px,
+        linear-gradient(180deg, #eaf4f7 0, rgba(234, 244, 247, 0) 360px),
+        linear-gradient(90deg, rgba(36, 90, 166, 0.06) 1px, transparent 1px) 0 0 / 52px 52px,
+        linear-gradient(rgba(8, 115, 110, 0.045) 1px, transparent 1px) 0 0 / 52px 52px,
         var(--paper);
       font-family: "BIZ UDPGothic", "Yu Gothic", "Hiragino Sans", Meiryo, sans-serif;
       line-height: 1.75;
@@ -549,7 +555,7 @@ function renderLearningJourneyHtml(items, repository) {
     .page {
       width: min(1120px, calc(100% - 32px));
       margin: 0 auto;
-      padding: 32px 0 56px;
+      padding: 24px 0 56px;
     }
 
     .topbar {
@@ -557,7 +563,7 @@ function renderLearningJourneyHtml(items, repository) {
       justify-content: space-between;
       align-items: center;
       gap: 18px;
-      margin-bottom: 22px;
+      margin-bottom: 18px;
       color: var(--muted);
       font-size: 0.9rem;
     }
@@ -575,7 +581,7 @@ function renderLearningJourneyHtml(items, repository) {
       place-items: center;
       width: 36px;
       height: 36px;
-      border-radius: 10px;
+      border-radius: 12px;
       background: var(--teal);
       color: #fff;
       box-shadow: 0 12px 24px rgba(8, 115, 110, 0.2);
@@ -583,10 +589,10 @@ function renderLearningJourneyHtml(items, repository) {
 
     .hero {
       display: grid;
-      grid-template-columns: minmax(0, 1.08fr) minmax(280px, 0.92fr);
-      gap: 24px;
+      grid-template-columns: minmax(0, 1.18fr) minmax(280px, 0.82fr);
+      gap: 18px;
       align-items: stretch;
-      margin-bottom: 24px;
+      margin-bottom: 18px;
     }
 
     .hero-copy,
@@ -595,26 +601,28 @@ function renderLearningJourneyHtml(items, repository) {
     .journey-card,
     .empty-journey {
       border: 1px solid var(--line);
-      border-radius: 16px;
-      background: rgba(255, 253, 247, 0.92);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.94);
       box-shadow: var(--shadow);
     }
 
     .hero-copy {
-      padding: clamp(26px, 4vw, 48px);
+      padding: clamp(26px, 4vw, 46px);
       position: relative;
       overflow: hidden;
+      border-top: 7px solid var(--blue);
     }
 
     .hero-copy::after {
       content: "";
       position: absolute;
-      right: -90px;
-      bottom: -120px;
-      width: 260px;
-      height: 260px;
+      right: 28px;
+      bottom: 26px;
+      width: 96px;
+      height: 12px;
       border-radius: 999px;
-      border: 34px solid rgba(8, 115, 110, 0.08);
+      background: linear-gradient(90deg, var(--teal), var(--amber), var(--coral));
+      opacity: 0.42;
     }
 
     .eyebrow {
@@ -629,9 +637,9 @@ function renderLearningJourneyHtml(items, repository) {
     h1, h2, h3, h4, p { margin-top: 0; }
 
     h1 {
-      max-width: 13ch;
+      max-width: 10em;
       margin-bottom: 16px;
-      font-size: clamp(2.2rem, 6vw, 4.9rem);
+      font-size: clamp(2.2rem, 5.5vw, 4.6rem);
       line-height: 1.05;
       letter-spacing: 0;
     }
@@ -644,7 +652,7 @@ function renderLearningJourneyHtml(items, repository) {
     }
 
     .reading-guide {
-      padding: 24px;
+      padding: 22px;
       display: grid;
       align-content: center;
       gap: 14px;
@@ -653,7 +661,7 @@ function renderLearningJourneyHtml(items, repository) {
 
     .guide-row {
       display: grid;
-      grid-template-columns: 34px minmax(0, 1fr);
+      grid-template-columns: 40px minmax(0, 1fr);
       gap: 12px;
       align-items: start;
     }
@@ -661,10 +669,10 @@ function renderLearningJourneyHtml(items, repository) {
     .guide-row span {
       display: grid;
       place-items: center;
-      width: 34px;
-      height: 34px;
-      border-radius: 10px;
-      background: rgba(8, 115, 110, 0.11);
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: rgba(36, 90, 166, 0.1);
       color: var(--teal);
       font-weight: 900;
     }
@@ -684,14 +692,15 @@ function renderLearningJourneyHtml(items, repository) {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 14px;
-      margin-bottom: 24px;
+      margin-bottom: 18px;
     }
 
     .summary-strip article {
       padding: 18px;
       border: 1px solid var(--line);
-      border-radius: 14px;
+      border-radius: 16px;
       background: var(--surface);
+      box-shadow: 0 10px 26px rgba(23, 32, 38, 0.06);
     }
 
     .summary-strip span,
@@ -707,16 +716,18 @@ function renderLearningJourneyHtml(items, repository) {
     .summary-strip strong {
       display: block;
       margin-top: 4px;
-      font-size: 1.8rem;
+      font-size: 2.05rem;
       line-height: 1.1;
+      color: var(--blue);
     }
 
     .featured-journey {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(260px, 0.44fr);
-      gap: 20px;
-      padding: clamp(22px, 3vw, 32px);
+      grid-template-columns: minmax(0, 1fr) minmax(260px, 0.36fr);
+      gap: 18px;
+      padding: clamp(22px, 3vw, 30px);
       margin-bottom: 26px;
+      border-left: 7px solid var(--teal);
     }
 
     .featured-copy h2 {
@@ -730,6 +741,29 @@ function renderLearningJourneyHtml(items, repository) {
     .featured-status p,
     .goal {
       color: var(--muted);
+    }
+
+    .growth-note {
+      margin-top: 18px;
+      padding: 16px;
+      border: 1px solid #cfe1dc;
+      border-radius: 14px;
+      background: #f0faf6;
+    }
+
+    .growth-note span {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--teal);
+      font-size: 0.78rem;
+      font-weight: 900;
+    }
+
+    .growth-note strong {
+      display: block;
+      color: var(--ink);
+      font-size: 1rem;
+      line-height: 1.7;
     }
 
     .featured-actions {
@@ -746,19 +780,26 @@ function renderLearningJourneyHtml(items, repository) {
       justify-content: center;
       min-height: 40px;
       padding: 0 14px;
-      border: 1px solid rgba(8, 115, 110, 0.28);
-      border-radius: 999px;
-      background: rgba(8, 115, 110, 0.08);
-      color: var(--teal);
+      border: 1px solid rgba(36, 90, 166, 0.28);
+      border-radius: 12px;
+      background: rgba(36, 90, 166, 0.08);
+      color: var(--blue);
       font-weight: 800;
       text-decoration: none;
     }
 
+    .featured-actions a:first-child,
+    .journey-card footer a {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: #fff;
+    }
+
     .featured-status {
-      padding: 18px;
+      padding: 20px;
       border-radius: 14px;
-      background: #eef7f1;
-      border: 1px solid #cfe4d4;
+      background: #fff8e8;
+      border: 1px solid #ead7a8;
     }
 
     .featured-status strong {
@@ -772,17 +813,17 @@ function renderLearningJourneyHtml(items, repository) {
       grid-column: 1 / -1;
       display: grid;
       grid-template-columns: repeat(6, minmax(0, 1fr));
-      gap: 10px;
+      gap: 8px;
       margin: 0;
       padding: 0;
       list-style: none;
     }
 
     .journey-rail li {
-      min-height: 82px;
-      padding: 12px;
+      min-height: 86px;
+      padding: 12px 10px;
       border: 1px solid var(--line);
-      border-radius: 14px;
+      border-radius: 16px;
       background: var(--surface);
       position: relative;
       overflow: hidden;
@@ -794,7 +835,7 @@ function renderLearningJourneyHtml(items, repository) {
       width: 12px;
       height: 12px;
       border-radius: 999px;
-      margin-bottom: 10px;
+      margin-bottom: 9px;
       background: #c9c3b6;
     }
 
@@ -818,6 +859,13 @@ function renderLearningJourneyHtml(items, repository) {
       font-size: 0.82rem;
     }
 
+    .journey-rail li:nth-child(1)::before { background: var(--blue); }
+    .journey-rail li:nth-child(2)::before { background: var(--lavender); }
+    .journey-rail li:nth-child(3)::before { background: var(--teal); }
+    .journey-rail li:nth-child(4)::before { background: var(--amber); }
+    .journey-rail li:nth-child(5)::before { background: var(--coral); }
+    .journey-rail li:nth-child(6)::before { background: var(--green); }
+
     .section-head {
       margin: 34px 0 16px;
     }
@@ -839,6 +887,8 @@ function renderLearningJourneyHtml(items, repository) {
 
     .journey-card {
       padding: clamp(18px, 3vw, 28px);
+      border-top: 1px solid var(--line);
+      box-shadow: 0 12px 34px rgba(23, 32, 38, 0.08);
     }
 
     .journey-card header {
@@ -858,7 +908,7 @@ function renderLearningJourneyHtml(items, repository) {
     .journey-card header > strong {
       max-width: 220px;
       padding: 8px 12px;
-      border-radius: 999px;
+      border-radius: 12px;
       background: rgba(212, 155, 42, 0.14);
       color: #7b5313;
       text-align: center;
@@ -873,17 +923,35 @@ function renderLearningJourneyHtml(items, repository) {
     }
 
     .journey-steps article {
-      min-height: 170px;
+      min-height: 188px;
       padding: 16px;
       border: 1px solid var(--line);
-      border-radius: 14px;
-      background: #fffaf0;
+      border-radius: 16px;
+      background: #fbf7ed;
+      position: relative;
     }
 
     .journey-steps .has-evidence {
       background: #ffffff;
       border-color: rgba(44, 92, 159, 0.26);
     }
+
+    .journey-steps article::after {
+      content: "";
+      position: absolute;
+      left: 16px;
+      right: 16px;
+      bottom: 0;
+      height: 4px;
+      border-radius: 999px 999px 0 0;
+      background: var(--blue);
+    }
+
+    .journey-steps article:nth-child(2)::after { background: var(--lavender); }
+    .journey-steps article:nth-child(3)::after { background: var(--teal); }
+    .journey-steps article:nth-child(4)::after { background: var(--amber); }
+    .journey-steps article:nth-child(5)::after { background: var(--coral); }
+    .journey-steps article:nth-child(6)::after { background: var(--green); }
 
     .journey-steps span {
       color: var(--blue);
@@ -901,6 +969,12 @@ function renderLearningJourneyHtml(items, repository) {
       color: var(--muted);
       font-size: 0.94rem;
     }
+
+    .journey-steps article:nth-child(2) span { color: var(--lavender); }
+    .journey-steps article:nth-child(3) span { color: var(--teal); }
+    .journey-steps article:nth-child(4) span { color: #9b6715; }
+    .journey-steps article:nth-child(5) span { color: var(--coral); }
+    .journey-steps article:nth-child(6) span { color: var(--green); }
 
     .journey-card footer {
       display: flex;
@@ -972,6 +1046,13 @@ function renderLearningJourneyHtml(items, repository) {
       h1 {
         max-width: none;
         font-size: 2.25rem;
+      }
+
+      .hero-copy,
+      .reading-guide,
+      .featured-journey,
+      .journey-card {
+        border-radius: 16px;
       }
     }
   </style>
