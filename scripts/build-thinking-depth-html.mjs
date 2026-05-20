@@ -168,6 +168,18 @@ function normalize(value) {
   return String(value ?? "").replace(/\r\n/g, "\n").trim();
 }
 
+function isPlaceholderValue(value) {
+  const text = stripMarkdown(value).replace(/\s+/g, "");
+
+  return [
+    "未確認。開始直後に本人の予想を確認する。",
+    "未定。最初の予想とたしかめ問題のあとで決める。",
+    "未定",
+    "未実施",
+    "まだはっきり記録されていません。",
+  ].some((placeholder) => text === placeholder.replace(/\s+/g, ""));
+}
+
 function normalizeHeading(value) {
   return normalize(value)
     .replace(/^追加説明[:：]\s*/, "追加説明")
@@ -224,7 +236,7 @@ function extractSections(markdown) {
   const matches = extractSectionEntries(markdown);
 
   for (const { title, body } of matches) {
-    if (!body) continue;
+    if (!body || isPlaceholderValue(body)) continue;
 
     const previous = sections.get(title);
     sections.set(title, previous ? `${previous}\n\n${body}` : body);
@@ -249,13 +261,13 @@ function extractSectionEntries(markdown) {
         body: text.slice(start, end).trim(),
       };
     })
-    .filter((entry) => entry.body);
+    .filter((entry) => entry.body && !isPlaceholderValue(entry.body));
 }
 
 function firstSection(sections, names) {
   for (const name of names) {
     const value = sections.get(name);
-    if (value) return value;
+    if (value && !isPlaceholderValue(value)) return value;
   }
   return "";
 }

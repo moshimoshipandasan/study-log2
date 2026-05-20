@@ -94,6 +94,19 @@ function normalize(value) {
   return String(value ?? "").replace(/\r\n/g, "\n").trim();
 }
 
+function isPlaceholderValue(value) {
+  const text = normalize(value)
+    .replace(/^[-*]\s+/gm, "")
+    .replace(/\s+/g, "");
+
+  return [
+    "未確認。開始直後に本人の予想を確認する。",
+    "未定。最初の予想とたしかめ問題のあとで決める。",
+    "未定",
+    "未実施",
+  ].some((placeholder) => text === placeholder.replace(/\s+/g, ""));
+}
+
 function extractSections(markdown) {
   const sections = new Map();
   const text = normalize(markdown);
@@ -107,7 +120,7 @@ function extractSections(markdown) {
     const start = current.index + current[0].length;
     const end = next ? next.index : text.length;
     const body = text.slice(start, end).trim();
-    if (body) {
+    if (body && !isPlaceholderValue(body)) {
       sections.set(title, body);
     }
   }
@@ -119,7 +132,7 @@ function firstSection(sectionSources, names) {
   for (const sections of sectionSources) {
     for (const name of names) {
       const value = sections.get(name);
-      if (value) return value;
+      if (value && !isPlaceholderValue(value)) return value;
     }
   }
   return "";
@@ -325,7 +338,7 @@ function markdownValue(value, fallback = "未記録") {
 
 function hasMeaning(value) {
   const text = normalize(value);
-  return Boolean(text) && text !== "未定";
+  return Boolean(text) && !isPlaceholderValue(text);
 }
 function renderHtml(items, repository) {
   return renderLearningJourneyHtml(items, repository);
