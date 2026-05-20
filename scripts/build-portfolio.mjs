@@ -149,6 +149,16 @@ function compactMarkdown(value, maxLength = 240) {
   return `${compact.slice(0, maxLength - 1).trim()}...`;
 }
 
+function uniqueValues(values) {
+  const seen = new Set();
+  return values.filter((value) => {
+    const key = normalize(value).replace(/\s+/g, " ");
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
 function extractArtifactLinks(value) {
   return normalize(value)
     .split("\n")
@@ -263,7 +273,8 @@ function displaySubject(value) {
 function parseIssue(issue, comments) {
   const issueSections = extractSections(issue.body ?? "");
   const commentSections = comments.map((comment) => extractSections(comment.body ?? ""));
-  const allSections = [issueSections, ...commentSections.reverse()];
+  const latestCommentSections = [...commentSections].reverse();
+  const allSections = [...latestCommentSections, issueSections];
   const labels = labelNames(issue);
   const thinking = analyzeThinking(commentSections);
 
@@ -277,7 +288,9 @@ function parseIssue(issue, comments) {
   const thinkingChange = compactMarkdown(firstSection(allSections, ["思考の変化", "考えが変わったところ"]), 220);
   const insight = compactMarkdown(firstSection(allSections, ["得た知見", "なるほどポイント", "わくわくポイント", "今日できるようになったこと"]), 220);
   const criteria = compactMarkdown(firstSection(allSections, ["次に使える判断基準", "レベルアップのゴール"]), 220);
-  const practice = compactMarkdown(firstSection(allSections, ["確認問題の結果", "類題・確認問題の結果", "次の確認問題", "たしかめたいこと"]), 180);
+  const practiceResult = firstSection(allSections, ["確認問題の結果", "類題・確認問題の結果"]);
+  const practicePrompt = firstSection(allSections, ["次の確認問題", "たしかめたいこと"]);
+  const practice = compactMarkdown(practiceResult || practicePrompt, 180);
   const misunderstanding = compactMarkdown(firstSection(allSections, ["間違いの原因・誤解しやすい点", "間違いの原因", "誤解しやすい点", "自分ではどこでずれたと思うか"]), 180);
   const review = compactMarkdown(firstSection(allSections, ["次回復習", "次回復習すること", "次回復習日"]), 160);
   const nextTask = compactMarkdown(firstSection(allSections, ["次の課題候補", "まだ不安なこと"]), 180);
@@ -344,7 +357,7 @@ function renderHtml(items, repository) {
   return renderLearningJourneyHtml(items, repository);
 }
 function journeyValue(...values) {
-  return values.find((value) => hasMeaning(value)) ?? "";
+  return uniqueValues(values).find((value) => hasMeaning(value)) ?? "";
 }
 
 function journeySteps(item) {

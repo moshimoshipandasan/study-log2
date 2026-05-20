@@ -115,7 +115,7 @@ const loopSteps = [
     label: "たしかめ",
     prompt: "何を見てたしかめた？",
     empty: "何を見てたしかめたかがまだはっきりしていません。",
-    headings: ["確認", "たしかめ", "根拠確認", "根拠確認の結果", "Codexの整理", "回答", "追加説明", "確認問題の結果", "類題・確認問題の結果", "次の確認問題", "たしかめたいこと"],
+    headings: ["確認", "たしかめ", "根拠確認", "根拠確認の結果", "回答", "確認問題の結果", "類題・確認問題の結果", "たしかめたいこと"],
   },
   {
     key: "shift",
@@ -278,7 +278,7 @@ function splitItems(value, maxItems = 4) {
 
   const bulletItems = text
     .split("\n")
-    .map((line) => line.replace(/^[-*]\s+/, "").trim())
+    .map((line) => line.replace(/^[-*]\s+/, "").replace(/^\d+\.\s+/, "").trim())
     .filter((line) => line && line !== text);
 
   const source = bulletItems.length > 1 ? bulletItems : stripMarkdown(text).split(/[。！？!?]+/);
@@ -288,8 +288,32 @@ function splitItems(value, maxItems = 4) {
     .slice(0, maxItems);
 }
 
+function uniqueValues(values) {
+  const seen = new Set();
+  return values.filter((value) => {
+    const key = stripMarkdown(value).replace(/\s+/g, " ");
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+function shouldIgnoreLoopEntry(title) {
+  const normalizedTitle = normalizeHeading(title);
+  return [
+    "関連issue",
+    "ラベル",
+    "学習開始",
+    "ラベル整理",
+    "codexの整理",
+    "学習終了まとめ",
+    "次の確認問題",
+  ].includes(normalizedTitle);
+}
+
 function classifyLoopEntry(title, body) {
   const normalizedTitle = normalizeHeading(title);
+  if (shouldIgnoreLoopEntry(title)) return "";
 
   for (const [alias, key] of loopHeadingAliases.entries()) {
     if (normalizedTitle === alias || normalizedTitle.startsWith(alias)) return key;
@@ -310,6 +334,7 @@ function buildLearningLoop(entries, phaseModels) {
   const evidence = new Map(loopSteps.map((step) => [step.key, []]));
 
   for (const entry of entries) {
+    if (shouldIgnoreLoopEntry(entry.title)) continue;
     const key = classifyLoopEntry(entry.title, entry.body);
     if (!key || !evidence.has(key)) continue;
 
@@ -607,11 +632,10 @@ function buildReportModel(source) {
   const phaseModels = basePhaseModels.map((phase) => {
     const loopKey = phase.key === "criteria" ? "future" : phase.key;
     const loopRaw = loopText(learningLoop, loopKey);
-    if (!loopRaw) return phase;
+    if (!loopRaw || phase.raw) return phase;
 
-    const combinedRaw = [phase.raw, loopRaw]
+    const combinedRaw = uniqueValues([phase.raw, loopRaw])
       .filter(Boolean)
-      .filter((value, index, values) => values.indexOf(value) === index)
       .join("\n\n");
     const strength = phaseStrength(combinedRaw);
     return {
@@ -634,12 +658,14 @@ function buildReportModel(source) {
     loopText(learningLoop, "insight") ||
     loopText(learningLoop, "future") ||
     "";
-  const actionItems = [
-    ...splitItems(firstSection(sections, ["次に使える判断基準", "レベルアップのゴール"]), 3),
-    ...splitItems(loopText(learningLoop, "future"), 3),
-    ...splitItems(firstSection(sections, ["類題・確認問題の結果", "確認問題の結果", "次の確認問題", "たしかめたいこと"]), 2),
+  const criteriaRaw = firstSection(sections, ["次に使える判断基準", "レベルアップのゴール"]);
+  const futureRaw = criteriaRaw ? "" : loopText(learningLoop, "future");
+  const actionItems = uniqueValues([
+    ...splitItems(criteriaRaw, 5),
+    ...splitItems(futureRaw, 3),
+    ...splitItems(firstSection(sections, ["類題・確認問題の結果", "確認問題の結果", "たしかめたいこと"]), 2),
     ...splitItems(review || nextTask, 2),
-  ].slice(0, 5);
+  ]).slice(0, 5);
 
   return {
     title,
@@ -1391,7 +1417,7 @@ function renderHtml(model) {
     ${renderTeacherNote()}
 
     <footer>
-      Generated from ${escapeHtml(model.source.sourceLabel)}. This file is a local learning artifact and is not committed unless you choose to publish it.
+      このページは${escapeHtml(model.source.sourceLabel)}の学習記録から自動で作られました。
     </footer>
   </main>
 </body>
