@@ -43,9 +43,9 @@ const stages = [
     next: "次に似た問題を見たときの見分け方を作ります。",
   },
   {
-    title: "次のコツにする",
+    title: "見分け方ができた",
     short: "次に使える",
-    description: "今回の学びを、次の問題やレポートでも使えるコツにできています。",
+    description: "見た目だけで決めず、何をたしかめればよいかが見えています。",
     next: "たしかめ問題や復習日を決め、次回も使えるか試します。",
   },
 ];
@@ -88,8 +88,8 @@ const phases = [
   },
   {
     key: "criteria",
-    label: "次のコツ",
-    friendly: "次はどんなコツを使う？",
+    label: "見分け方",
+    friendly: "次は何をたしかめる？",
     hint: "次に似た問題を見たとき、何をたしかめればよいかがあるか。",
     sections: ["次に使える判断基準", "レベルアップのゴール", "科学的な見地から見た注意点"],
   },
@@ -133,8 +133,8 @@ const loopSteps = [
   },
   {
     key: "future",
-    label: "次のコツ",
-    prompt: "次は何に使う？",
+    label: "見分け方",
+    prompt: "次は何をたしかめる？",
     empty: "次に似た問題で使う見分け方や復習予定がまだ少ないです。",
     headings: ["次に使う", "これから使う", "次のコツ", "次に使える判断基準", "レベルアップのゴール", "次回復習すること", "次回復習日", "次回復習", "次の課題候補", "まだ不安なこと"],
   },
@@ -286,6 +286,23 @@ function splitItems(value, maxItems = 4) {
     .map((item) => compactMarkdown(item, 110))
     .filter(Boolean)
     .slice(0, maxItems);
+}
+
+function buildUseAgainItems(criteriaRaw, futureRaw) {
+  const primary = criteriaRaw || futureRaw;
+  if (!primary) return [];
+
+  const blocks = normalize(primary)
+    .split(/\n{2,}/)
+    .map((block) => block.trim())
+    .filter(Boolean);
+  const lastBlock = blocks.at(-1) || primary;
+  const previousBlock = blocks.at(-2) || "";
+  const bestBlock = previousBlock && /^\d+\.\s+/m.test(lastBlock) ? `${previousBlock}\n${lastBlock}` : lastBlock;
+  const compact = compactMarkdown(bestBlock, 260);
+  if (!compact) return [];
+
+  return [compact];
 }
 
 function uniqueValues(values) {
@@ -576,7 +593,7 @@ async function loadSource(args) {
 
 学習で説明できるようになったことが、ここに表示されます。
 
-## 次のコツ
+## 次に使える見分け方
 
 次に似た問題を見たときの見分け方が、ここに表示されます。
 
@@ -661,11 +678,8 @@ function buildReportModel(source) {
   const criteriaRaw = firstSection(sections, ["次に使える判断基準", "レベルアップのゴール"]);
   const futureRaw = criteriaRaw ? "" : loopText(learningLoop, "future");
   const actionItems = uniqueValues([
-    ...splitItems(criteriaRaw, 5),
-    ...splitItems(futureRaw, 3),
-    ...splitItems(firstSection(sections, ["類題・確認問題の結果", "確認問題の結果", "たしかめたいこと"]), 2),
-    ...splitItems(review || nextTask, 2),
-  ]).slice(0, 5);
+    ...buildUseAgainItems(criteriaRaw, futureRaw),
+  ]).slice(0, 2);
 
   return {
     title,
@@ -747,7 +761,7 @@ function renderLearningLoop(loop) {
           <span class="eyebrow">Learning Loop</span>
           <h2>一周ごとの考えの進み方</h2>
         </div>
-        <p>会話やIssueコメントから、学習者が「ふしぎ → 予想 → たしかめ → 考え直し → なるほど → 次のコツ」へ進んだ跡を拾います。</p>
+        <p>会話やIssueコメントから、学習者が「ふしぎ → 予想 → たしかめ → 考え直し → なるほど → 見分け方」へ進んだ跡を拾います。</p>
       </div>
       <ol class="loop-steps">
         ${loop
@@ -802,7 +816,7 @@ function renderTeacherNote() {
       </div>
       <p>
         これはテストの点数ではありません。
-        「何をふしぎに思ったか」「自分ではどう予想したか」「何をたしかめて考え直したか」「どんななるほどを次のコツにしたか」を、
+        「何をふしぎに思ったか」「自分ではどう予想したか」「何をたしかめて考え直したか」「どんな見分け方ができたか」を、
         学習者の言葉からたどるためのページです。
       </p>
     </section>`;
@@ -1166,8 +1180,13 @@ function renderHtml(model) {
     }
 
     .next-card h2 {
-      margin-bottom: 12px;
+      margin-bottom: 8px;
       font-size: 1.35rem;
+    }
+
+    .next-card__lead {
+      margin-bottom: 12px;
+      color: var(--muted);
     }
 
     .action-list {
@@ -1303,8 +1322,9 @@ function renderHtml(model) {
 
     ${renderBeforeAfter(model)}
 
-    <section class="next-card" aria-label="次のコツ">
-      <h2>次のコツ</h2>
+    <section class="next-card" aria-label="次に使える見分け方">
+      <h2>次に使える見分け方</h2>
+      <p class="next-card__lead">今回の学びから、次に似たものを見たときにたしかめることです。</p>
       ${renderActionList(model.actionItems, model.stage.next)}
     </section>
 
@@ -1380,7 +1400,7 @@ function renderMarkdown(model) {
     `- 最初: ${markdownValue(model.before)}`,
     `- 後から見えたこと: ${markdownValue(model.after)}`,
     "",
-    "## 次のコツ",
+    "## 次に使える見分け方",
     "",
     actionItems,
     "",
