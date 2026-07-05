@@ -7,6 +7,8 @@
   "scripts": {
     "build:portfolio": "node scripts/build-portfolio.mjs",
     "build:thinking-depth": "node scripts/build-thinking-depth-html.mjs",
+    "build:issue-reports": "node scripts/build-issue-reports.mjs",
+    "check:issues": "node scripts/check-issue-quality.mjs",
     "harness:end-report": "node scripts/build-thinking-depth-html.mjs",
     "check": "node scripts/check-learning-harness.mjs",
     "sync-labels": "node scripts/sync-labels.mjs",

@@ -278,10 +278,19 @@ Closes #<Issue番号>
 npm install
 npm run setup:harness
 npm run check
+npm run check:issues
 npm run sync-labels
 npm run build:portfolio
 npm run build:thinking-depth
+npm run build:issue-reports
 npm run harness:end-report -- --issue <Issue番号>
+```
+
+Issueの記録がClose条件（仮説、思考の変化、確認問題、次回復習など）を満たしているかを確認する場合:
+
+```bash
+npm run check:issues
+npm run check:issues -- --issue <Issue番号>
 ```
 
 特定のIssueから、まなびレポートを手動生成する場合:

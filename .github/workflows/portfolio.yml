@@ -57,16 +57,19 @@ jobs:
             echo "issue_number=${{ github.event.inputs.issue_number }}" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Build thinking-depth report
-        if: ${{ steps.report.outputs.issue_number != '' }}
+      # Pagesのデプロイはサイト全体を置き換えるため、公開対象の完了済みIssue全件の
+      # レポートを毎回作り直す。今回閉じたIssueがあればそれを最新レポートにする。
+      - name: Build thinking-depth reports
         run: |
-          if ! [[ "$ISSUE_NUMBER" =~ ^[0-9]+$ ]]; then
+          if [[ -n "$ISSUE_NUMBER" && ! "$ISSUE_NUMBER" =~ ^[0-9]+$ ]]; then
             echo "issue_number must be numeric: $ISSUE_NUMBER" >&2
             exit 1
           fi
-          npm run harness:end-report -- --issue "$ISSUE_NUMBER" --out "public/thinking-depth/issue-${ISSUE_NUMBER}.html" --markdown-out "public/thinking-depth/issue-${ISSUE_NUMBER}.md"
-          cp "public/thinking-depth/issue-${ISSUE_NUMBER}.html" "public/thinking-depth.html"
-          cp "public/thinking-depth/issue-${ISSUE_NUMBER}.md" "public/thinking-depth.md"
+          if [[ -n "$ISSUE_NUMBER" ]]; then
+            npm run build:issue-reports -- --latest "$ISSUE_NUMBER"
+          else
+            npm run build:issue-reports
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ISSUE_NUMBER: ${{ steps.report.outputs.issue_number }}
