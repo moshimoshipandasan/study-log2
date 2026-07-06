@@ -12,7 +12,7 @@
     "harness:end-report": "node scripts/build-thinking-depth-html.mjs",
     "check": "node scripts/check-learning-harness.mjs",
     "sync-labels": "node scripts/sync-labels.mjs",
-    "setup:harness": "npm run sync-labels && npm run check && npm run build:portfolio && npm run build:thinking-depth"
+    "setup:harness": "npm run sync-labels && npm run check && npm run build:portfolio && npm run build:thinking-depth && npm run build:issue-reports"
   },
   "devDependencies": {
     "yaml": "^2.8.1"
