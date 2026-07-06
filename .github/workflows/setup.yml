@@ -54,6 +54,13 @@ jobs:
       - name: Build starter learning report
         run: npm run build:thinking-depth
 
+      # ポートフォリオの完了カードがIssue別レポートへリンクするため、
+      # setup経由のデプロイでもリンク切れにならないよう全件生成する。
+      - name: Build issue reports
+        run: npm run build:issue-reports
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 

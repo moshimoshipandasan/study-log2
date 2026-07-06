@@ -781,6 +781,36 @@ function renderLearningLoop(loop) {
     </section>`;
 }
 
+function renderStrengthBoard(phaseModels) {
+  return `
+    <section class="strength-board" aria-label="観点ごとの見え方">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Visibility</span>
+          <h2>考えの見え方</h2>
+        </div>
+        <p>6つの観点が、本人の言葉でどれくらいはっきり残っているかです。バーの長さは点数ではなく「読み取れる量」を表します。</p>
+      </div>
+      <ul class="strength-list">
+        ${phaseModels
+          .map(
+            (phase) => `
+              <li>
+                <div class="strength-label">
+                  <strong>${escapeHtml(phase.label)}</strong>
+                  <span>${escapeHtml(phase.friendly)}</span>
+                </div>
+                <div class="strength-bar" role="img" aria-label="${escapeHtml(phase.label)}: ${escapeHtml(phase.status)}">
+                  <i style="width:${phase.width}%"></i>
+                </div>
+                <span class="strength-status">${escapeHtml(phase.status)}</span>
+              </li>`,
+          )
+          .join("")}
+      </ul>
+    </section>`;
+}
+
 function renderActionList(items, fallback) {
   const values = items.length ? items : [fallback];
 
@@ -1131,6 +1161,65 @@ function renderHtml(model) {
       font-weight: 700;
     }
 
+    .strength-board {
+      margin: 18px 0;
+      padding: 24px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      border-radius: 22px;
+      box-shadow: 0 10px 28px rgba(32, 36, 38, 0.1);
+    }
+
+    .strength-board .section-head {
+      margin: 0 0 18px;
+    }
+
+    .strength-list {
+      list-style: none;
+      display: grid;
+      gap: 12px;
+      margin: 0;
+      padding: 0;
+    }
+
+    .strength-list li {
+      display: grid;
+      grid-template-columns: minmax(150px, 0.35fr) minmax(0, 1fr) 110px;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .strength-label strong {
+      display: block;
+      font-size: 0.98rem;
+    }
+
+    .strength-label span {
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+
+    .strength-bar {
+      height: 12px;
+      border-radius: 999px;
+      background: #ece5d5;
+      overflow: hidden;
+    }
+
+    .strength-bar i {
+      display: block;
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--teal), var(--blue));
+    }
+
+    .strength-status {
+      color: var(--green);
+      font-size: 0.82rem;
+      font-weight: 800;
+      text-align: right;
+    }
+
     .change-board {
       display: grid;
       grid-template-columns: minmax(0, 1fr) 54px minmax(0, 1fr);
@@ -1245,6 +1334,15 @@ function renderHtml(model) {
         transform: rotate(90deg);
       }
 
+      .strength-list li {
+        grid-template-columns: 1fr;
+        gap: 6px;
+      }
+
+      .strength-status {
+        text-align: left;
+      }
+
       .section-head {
         display: grid;
         align-items: start;
@@ -1319,6 +1417,8 @@ function renderHtml(model) {
     </section>
 
     ${renderLearningLoop(model.learningLoop)}
+
+    ${renderStrengthBoard(model.phases)}
 
     ${renderBeforeAfter(model)}
 

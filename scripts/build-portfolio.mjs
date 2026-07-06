@@ -505,7 +505,10 @@ function renderJourneyCard(item) {
       ${renderJourneySteps(item)}
       <footer>
         <span>更新日 ${formatDate(item.updatedAt)}${item.closedAt ? ` / 完了日 ${formatDate(item.closedAt)}` : ""}</span>
-        <a href="${escapeHtml(item.url)}">記録の原文を見る</a>
+        <div class="card-links">
+          ${item.state === "closed" ? `<a href="thinking-depth/issue-${item.number}.html">まなびレポートを見る</a>` : ""}
+          <a class="secondary" href="${escapeHtml(item.url)}">記録の原文を見る</a>
+        </div>
       </footer>
     </article>`;
 }
@@ -768,6 +771,18 @@ function renderLearningJourneyHtml(items, repository) {
       background: var(--blue);
       border-color: var(--blue);
       color: #fff;
+    }
+
+    .journey-card footer a.secondary {
+      background: rgba(36, 90, 166, 0.08);
+      color: var(--blue);
+      border-color: rgba(36, 90, 166, 0.28);
+    }
+
+    .card-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
     }
 
     .featured-status {
